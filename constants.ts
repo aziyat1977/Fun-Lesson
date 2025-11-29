@@ -56,7 +56,8 @@ export const EMOJI_IDIOMS = [
 export const ODD_ONE_OUT = [
     { items: ["TikTok", "Instagram", "Netflix", "Snapchat"], answer: "Netflix", reason: "It's for movies, not messaging/social." },
     { items: ["Batman", "Superman", "Spiderman", "Joker"], answer: "Joker", reason: "He is a villain (bad guy)." },
-    { items: ["Piano", "Guitar", "Violin", "Flute"], answer: "Flute", reason: "It has no strings." }
+    { items: ["Piano", "Guitar", "Violin", "Flute"], answer: "Flute", reason: "It has no strings (Wind instrument)." },
+    { items: ["Football", "Tennis", "Basketball", "Swimming"], answer: "Swimming", reason: "You don't use a ball." }
 ];
 
 export const SLANG_SCRAMBLE = [

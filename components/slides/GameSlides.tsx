@@ -229,7 +229,23 @@ export const EmojiIdiomsSlide: React.FC = () => {
 }
 
 export const OddOneOutSlide: React.FC = () => {
-    const [revealed, setRevealed] = useState<number | null>(null);
+    // Track which answer is revealed for each set
+    const [revealedSet, setRevealedSet] = useState<number | null>(null);
+    // Track if the user made a wrong guess (for shake animation)
+    const [wrongGuess, setWrongGuess] = useState<{setIdx: number, item: string} | null>(null);
+
+    const handleGuess = (setIdx: number, item: string, correct: string) => {
+        if (revealedSet === setIdx) return; // Already answered
+
+        if (item === correct) {
+            setRevealedSet(setIdx);
+            setWrongGuess(null);
+        } else {
+            setWrongGuess({ setIdx, item });
+            // Clear shake effect after animation
+            setTimeout(() => setWrongGuess(null), 500);
+        }
+    };
 
     return (
         <SlideContainer>
@@ -237,34 +253,57 @@ export const OddOneOutSlide: React.FC = () => {
                 <h2 className="font-righteous text-3xl md:text-5xl text-orange-500 uppercase tracking-wider mb-2 text-center">
                     Game 11: Odd One Out
                 </h2>
-                <p className="text-center font-outfit text-lg md:text-xl mb-8 opacity-80">Which one doesn't belong? Why?</p>
+                <p className="text-center font-outfit text-lg md:text-xl mb-6 opacity-80">Click the item that doesn't belong!</p>
                 
                 <div className="grid grid-cols-1 gap-6 max-w-4xl mx-auto w-full">
                     {ODD_ONE_OUT.map((set, idx) => (
-                        <div key={idx} className="bg-slate-100 dark:bg-slate-800 p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between border-l-8 border-orange-500 shadow-md">
-                            <div className="flex gap-4 mb-4 md:mb-0 flex-wrap justify-center md:justify-start">
-                                {set.items.map((item, i) => (
-                                    <span key={i} className={`px-4 py-2 rounded-lg font-bold border-2 ${revealed === idx && item === set.answer ? 'bg-orange-100 dark:bg-orange-900/30 border-orange-500 text-orange-600 dark:text-orange-400' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700'}`}>
-                                        {item}
-                                    </span>
-                                ))}
+                        <div key={idx} className="bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between border-l-8 border-orange-500 shadow-md">
+                            <div className="flex gap-3 mb-4 md:mb-0 flex-wrap justify-center md:justify-start flex-grow">
+                                {set.items.map((item, i) => {
+                                    const isWrong = wrongGuess?.setIdx === idx && wrongGuess?.item === item;
+                                    const isCorrect = revealedSet === idx && item === set.answer;
+                                    const isRevealed = revealedSet === idx;
+
+                                    return (
+                                        <button 
+                                            key={i} 
+                                            onClick={() => handleGuess(idx, item, set.answer)}
+                                            className={`
+                                                px-4 py-3 rounded-xl font-bold border-2 transition-all duration-300
+                                                ${isWrong ? 'animate-shake bg-red-100 border-red-500 text-red-600' : ''}
+                                                ${isCorrect ? 'bg-green-100 dark:bg-green-900/30 border-green-500 text-green-600 dark:text-green-400 scale-105' : ''}
+                                                ${!isWrong && !isCorrect && !isRevealed ? 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-orange-400 hover:shadow-md' : ''}
+                                                ${isRevealed && !isCorrect ? 'opacity-50 grayscale' : ''}
+                                            `}
+                                        >
+                                            {item}
+                                        </button>
+                                    );
+                                })}
                             </div>
-                            <div className="flex flex-col items-end">
-                                <button 
-                                    onClick={() => setRevealed(revealed === idx ? null : idx)}
-                                    className="text-sm font-bold uppercase tracking-widest text-orange-500 hover:text-orange-400 mb-2"
-                                >
-                                    {revealed === idx ? 'Hide Answer' : 'Show Answer'}
-                                </button>
-                                <div className={`text-right transition-opacity duration-300 ${revealed === idx ? 'opacity-100' : 'opacity-0'}`}>
-                                    <span className="block font-righteous text-xl text-orange-500">{set.answer}</span>
-                                    <span className="text-xs md:text-sm text-slate-500 dark:text-slate-400 italic">"{set.reason}"</span>
+                            
+                            <div className={`flex flex-col items-end md:w-1/3 transition-all duration-500 ${revealedSet === idx ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}`}>
+                                <div className="text-right">
+                                    <span className="block font-righteous text-xl text-green-500 mb-1">Correct!</span>
+                                    <span className="text-sm md:text-base text-slate-600 dark:text-slate-300 font-outfit leading-tight block">
+                                        "{set.reason}"
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
             </div>
+            <style>{`
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(-5px); }
+                    75% { transform: translateX(5px); }
+                }
+                .animate-shake {
+                    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+                }
+            `}</style>
         </SlideContainer>
     );
 }
