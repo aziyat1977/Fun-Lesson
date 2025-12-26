@@ -2,78 +2,70 @@ import React, { useState, useEffect } from 'react';
 import { SlideContainer } from '../SlideContainer';
 import { MANDELA_QUESTIONS, ROBOT_LYRICS, EMOJI_IDIOMS, ODD_ONE_OUT, SLANG_SCRAMBLE, PRICE_IS_RIGHT } from '../../constants';
 import { Gamepad2, FireExtinguisher, Smartphone, Apple, Eye, DollarSign, Clock, HelpCircle, Check, X, Car, Plane, Watch } from 'lucide-react';
+import { playClick, playCorrect, playIncorrect, playReveal } from '../../utils/sound';
 
-export const MandelaSlide: React.FC = () => {
+export const MandelaSlide: React.FC<{ item: any, index: number }> = ({ item, index }) => {
   const [revealed, setRevealed] = useState(false);
+
+  const handleReveal = (option: string) => {
+    if (revealed) return;
+    setRevealed(true);
+    if (option === item.correct) {
+        playCorrect();
+    } else {
+        playIncorrect();
+    }
+  };
 
   return (
     <SlideContainer>
-      <div className="flex flex-col h-full">
-        <div className="flex-shrink-0 mb-4 md:mb-6">
-            <h2 className="font-righteous text-2xl md:text-4xl lg:text-5xl text-pink-500 uppercase tracking-wider mb-2 text-center">
-            Game 5: The Mandela Effect
+      <div className="flex flex-col h-full items-center justify-center">
+        <div className="flex-shrink-0 mb-8 text-center">
+            <h2 className="font-righteous text-2xl md:text-4xl lg:text-5xl text-pink-500 uppercase tracking-wider mb-2">
+            Game 5: The Mandela Effect #{index + 1}
             </h2>
-            <p className="text-center font-outfit text-base md:text-xl opacity-80">Which one is REAL? Your memory might be lying.</p>
+            <p className="font-outfit text-base md:text-xl opacity-80">Which one is REAL?</p>
         </div>
         
-        <div className="flex-grow overflow-y-auto pr-2 pb-20 md:pb-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 mb-6">
-                {MANDELA_QUESTIONS.map((q, idx) => (
-                    <div key={idx} className="bg-white dark:bg-slate-800 p-4 md:p-6 lg:p-8 rounded-2xl shadow-lg border-2 border-pink-500/30 flex flex-col items-center text-center hover:border-pink-500 transition-colors">
-                        <h3 className="font-righteous text-lg md:text-2xl mb-3 md:mb-6">{q.title}</h3>
-                        <div className="w-full space-y-2 md:space-y-3">
-                            <button className={`w-full py-2 px-3 md:px-4 rounded-lg border-2 font-bold transition-all text-sm md:text-lg ${revealed && q.correct === 'A' ? 'bg-green-500 text-white border-green-500' : revealed ? 'border-slate-300 dark:border-slate-600 opacity-50' : 'border-slate-300 dark:border-slate-600 hover:bg-pink-500 hover:text-white hover:border-pink-500'}`}>
-                                A. {q.optionA}
-                            </button>
-                            <button className={`w-full py-2 px-3 md:px-4 rounded-lg border-2 font-bold transition-all text-sm md:text-lg ${revealed && q.correct === 'B' ? 'bg-green-500 text-white border-green-500' : revealed ? 'border-slate-300 dark:border-slate-600 opacity-50' : 'border-slate-300 dark:border-slate-600 hover:bg-pink-500 hover:text-white hover:border-pink-500'}`}>
-                                B. {q.optionB}
-                            </button>
-                        </div>
-                        <p className="mt-3 md:mt-6 text-xs md:text-sm italic opacity-60">{q.hint}</p>
-                    </div>
-                ))}
+        <div className="flex-grow flex flex-col justify-center items-center w-full max-w-3xl">
+            <div className="bg-white dark:bg-slate-800 p-8 md:p-12 rounded-3xl shadow-2xl border-2 border-pink-500/30 flex flex-col items-center text-center w-full">
+                <h3 className="font-righteous text-3xl md:text-5xl mb-8">{item.title}</h3>
+                <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                    <button onClick={() => handleReveal('A')} className={`w-full py-6 md:py-8 px-4 rounded-xl border-4 font-bold transition-all text-xl md:text-3xl ${revealed && item.correct === 'A' ? 'bg-green-500 text-white border-green-500 scale-105' : revealed ? 'border-slate-300 dark:border-slate-600 opacity-30' : 'border-slate-300 dark:border-slate-600 hover:bg-pink-500 hover:text-white hover:border-pink-500'}`}>
+                        {item.optionA}
+                    </button>
+                    <button onClick={() => handleReveal('B')} className={`w-full py-6 md:py-8 px-4 rounded-xl border-4 font-bold transition-all text-xl md:text-3xl ${revealed && item.correct === 'B' ? 'bg-green-500 text-white border-green-500 scale-105' : revealed ? 'border-slate-300 dark:border-slate-600 opacity-30' : 'border-slate-300 dark:border-slate-600 hover:bg-pink-500 hover:text-white hover:border-pink-500'}`}>
+                        {item.optionB}
+                    </button>
+                </div>
+                {revealed && <p className="mt-8 text-xl md:text-2xl italic opacity-80 animate-fade-in">{item.hint}</p>}
             </div>
-        </div>
-        
-        <div className="flex-shrink-0 flex justify-center pt-4 border-t border-slate-200 dark:border-slate-800">
-            <button 
-                onClick={() => setRevealed(!revealed)}
-                className="bg-slate-800 dark:bg-slate-700 text-white font-righteous py-2 md:py-3 px-6 md:px-8 rounded-full hover:bg-sky-500 transition-colors shadow-lg flex items-center gap-2 text-sm md:text-base"
-            >
-                {revealed ? 'Hide Answers' : 'Reveal Answers'} <Eye size={20} />
-            </button>
         </div>
       </div>
     </SlideContainer>
   );
 };
 
-export const RobotLyricsSlide: React.FC = () => {
+export const RobotLyricsSlide: React.FC<{ item: any, index: number }> = ({ item, index }) => {
     return (
       <SlideContainer>
-        <div className="flex flex-col h-full w-full">
-            <div className="flex-shrink-0 mb-4 md:mb-8 text-center">
+        <div className="flex flex-col h-full w-full items-center justify-center">
+            <div className="flex-shrink-0 mb-8 text-center">
                 <h2 className="font-righteous text-2xl md:text-4xl lg:text-5xl text-green-500 uppercase tracking-wider mb-2">
-                Game 6: Robot Lyrics
+                Game 6: Robot Lyrics #{index + 1}
                 </h2>
-                <p className="font-outfit text-base md:text-xl opacity-80 max-w-2xl mx-auto">
-                    I translated famous songs into "Robot English". <strong>Guess the Song!</strong>
-                </p>
+                <p className="font-outfit text-base md:text-xl opacity-80">Guess the Song!</p>
             </div>
             
-            <div className="flex-grow overflow-y-auto pr-2">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                    {ROBOT_LYRICS.map((item, idx) => (
-                        <div key={idx} className="bg-slate-200 dark:bg-slate-800 p-4 md:p-6 lg:p-8 rounded-2xl border-l-8 border-green-500 shadow-md relative overflow-hidden group cursor-pointer">
-                            <div className="font-mono text-green-600 dark:text-green-400 text-lg md:text-2xl font-bold mb-2 md:mb-4 relative z-10">
-                                "{item.text}"
-                            </div>
-                            <div className="text-right font-outfit text-sm md:text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-y-2 group-hover:translate-y-0 text-slate-800 dark:text-slate-100">
-                                Answer: <strong>{item.answer}</strong>
-                            </div>
-                            <div className="absolute top-2 right-2 md:top-4 md:right-4 text-[10px] md:text-xs uppercase tracking-widest opacity-30 group-hover:opacity-0 transition-opacity">Hover to reveal</div>
-                        </div>
-                    ))}
+            <div className="flex-grow flex items-center justify-center w-full max-w-4xl">
+                <div className="bg-slate-200 dark:bg-slate-800 p-8 md:p-16 rounded-3xl border-l-8 border-green-500 shadow-xl relative overflow-hidden group cursor-pointer w-full text-center hover:scale-105 transition-transform" onMouseEnter={playClick}>
+                    <div className="font-mono text-green-600 dark:text-green-400 text-3xl md:text-5xl font-bold mb-8 relative z-10 leading-snug">
+                        "{item.text}"
+                    </div>
+                    <div className="font-outfit text-2xl md:text-4xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-y-4 group-hover:translate-y-0 text-slate-800 dark:text-slate-100">
+                        <strong>{item.answer}</strong>
+                    </div>
+                    <div className="absolute top-4 right-4 text-sm uppercase tracking-widest opacity-30 group-hover:opacity-0 transition-opacity">Hover to reveal</div>
                 </div>
             </div>
         </div>
@@ -81,47 +73,46 @@ export const RobotLyricsSlide: React.FC = () => {
     );
 };
 
-export const ZoomInSlide: React.FC = () => {
+export const ZoomInSlide: React.FC<{ index: number }> = ({ index }) => {
+    // We handle the specific render content here based on index
+    const renderContent = () => {
+        if (index === 0) {
+            return (
+                <div className="w-64 h-64 md:w-96 md:h-96 bg-zinc-800 rounded-full border-8 border-white overflow-hidden flex items-center justify-center mb-6">
+                    <span className="text-zinc-400 text-6xl md:text-9xl font-bold tracking-widest">△○✕□</span>
+                </div>
+            );
+        } else if (index === 1) {
+            return (
+                <div className="w-64 h-64 md:w-96 md:h-96 bg-yellow-500 rounded-full overflow-hidden flex items-center justify-center mb-6 relative">
+                    <div className="absolute w-32 md:w-48 h-8 md:h-12 bg-black rotate-45"></div>
+                    <div className="absolute w-8 md:w-12 h-32 md:h-48 bg-black rotate-45"></div>
+                </div>
+            );
+        } else {
+             return (
+                <div className="w-64 h-64 md:w-96 md:h-96 bg-white rounded-full overflow-hidden flex items-center justify-center mb-6 border-8 border-slate-200">
+                    <span className="text-8xl md:text-[10rem]">🍎</span>
+                </div>
+            );
+        }
+    };
+    
+    const answers = ["PlayStation Controller", "Minecraft Bee", "iPhone Logo"];
+
     return (
         <SlideContainer>
-             <div className="flex flex-col h-full">
+             <div className="flex flex-col h-full items-center justify-center">
                 <h2 className="font-righteous text-2xl md:text-4xl lg:text-5xl text-purple-500 uppercase tracking-wider mb-2 text-center flex-shrink-0">
-                Game 8: Zoom In
+                Game 8: Zoom In #{index + 1}
                 </h2>
-                <p className="text-center font-outfit text-base md:text-xl mb-6 md:mb-12 opacity-80 flex-shrink-0">What is this object?</p>
+                <p className="text-center font-outfit text-base md:text-xl mb-8 opacity-80 flex-shrink-0">What is this object?</p>
 
-                <div className="flex-grow overflow-y-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 pb-8">
-                        {/* Item 1 */}
-                        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col items-center text-center shadow-lg group cursor-pointer hover:border-purple-500 transition-colors">
-                            <div className="w-32 h-32 md:w-48 md:h-48 bg-zinc-800 rounded-full border-4 border-white overflow-hidden flex items-center justify-center mb-4 md:mb-6">
-                                <span className="text-zinc-400 text-3xl md:text-5xl font-bold tracking-widest">△○✕□</span>
-                            </div>
-                            <p className="font-bold text-lg md:text-xl mb-2">Object 1</p>
-                            <p className="text-sm opacity-50 italic group-hover:opacity-0 transition-opacity">Hover/Tap to reveal</p>
-                            <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity text-purple-500 font-bold text-lg md:text-xl">PlayStation Controller</div>
-                        </div>
-
-                        {/* Item 2 */}
-                        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col items-center text-center shadow-lg group cursor-pointer hover:border-purple-500 transition-colors">
-                            <div className="w-32 h-32 md:w-48 md:h-48 bg-yellow-500 rounded-full overflow-hidden flex items-center justify-center mb-4 md:mb-6 relative">
-                                <div className="absolute w-16 md:w-24 h-4 md:h-5 bg-black rotate-45"></div>
-                                <div className="absolute w-4 md:w-5 h-16 md:h-24 bg-black rotate-45"></div>
-                            </div>
-                            <p className="font-bold text-lg md:text-xl mb-2">Object 2</p>
-                            <p className="text-sm opacity-50 italic group-hover:opacity-0 transition-opacity">Hover/Tap to reveal</p>
-                            <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity text-purple-500 font-bold text-lg md:text-xl">Minecraft Bee</div>
-                        </div>
-
-                        {/* Item 3 */}
-                        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col items-center text-center shadow-lg group cursor-pointer hover:border-purple-500 transition-colors">
-                            <div className="w-32 h-32 md:w-48 md:h-48 bg-white rounded-full overflow-hidden flex items-center justify-center mb-4 md:mb-6 border border-slate-200">
-                                <span className="text-5xl md:text-7xl">🍎</span>
-                            </div>
-                            <p className="font-bold text-lg md:text-xl mb-2">Object 3</p>
-                            <p className="text-sm opacity-50 italic group-hover:opacity-0 transition-opacity">Hover/Tap to reveal</p>
-                            <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity text-purple-500 font-bold text-lg md:text-xl">iPhone Logo</div>
-                        </div>
+                <div className="flex-grow flex items-center justify-center">
+                    <div className="bg-white dark:bg-slate-800 p-10 rounded-3xl border border-slate-200 dark:border-slate-700 flex flex-col items-center text-center shadow-2xl group cursor-pointer hover:border-purple-500 transition-colors" onClick={playReveal}>
+                        {renderContent()}
+                        <p className="text-lg opacity-50 italic group-hover:opacity-0 transition-opacity mb-4">Hover/Tap to reveal</p>
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity text-purple-500 font-bold text-3xl md:text-5xl">{answers[index]}</div>
                     </div>
                 </div>
              </div>
@@ -129,44 +120,25 @@ export const ZoomInSlide: React.FC = () => {
     )
 }
 
-export const ForbiddenWordSlide: React.FC = () => {
+export const ForbiddenWordSlide: React.FC<{ item: any }> = ({ item }) => {
     return (
         <SlideContainer>
-            <div className="flex flex-col h-full justify-center">
+            <div className="flex flex-col h-full justify-center items-center">
                  <h2 className="font-righteous text-2xl md:text-4xl lg:text-5xl text-pink-500 uppercase tracking-wider mb-8 md:mb-12 text-center flex-shrink-0">
                     Game 9: Forbidden Word
                 </h2>
-                <div className="flex-grow flex flex-col md:justify-center overflow-y-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 px-0 md:px-8 pb-8">
-                        {/* Card A */}
-                        <div className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700 relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-full h-2 bg-sky-500"></div>
-                            <h3 className="text-sky-500 font-righteous text-xl md:text-3xl mb-4">Team A Challenge</h3>
-                            <p className="font-outfit text-lg md:text-2xl mb-4 md:mb-6">Describe: <strong className="text-2xl md:text-4xl block mt-2">TIKTOK</strong></p>
-                            <div className="h-px w-full bg-slate-200 dark:bg-slate-700 my-4 md:my-6"></div>
-                            <p className="text-pink-500 font-bold text-base md:text-xl mb-4 uppercase tracking-widest">🚫 You CANNOT say:</p>
-                            <ul className="space-y-2 font-outfit text-base md:text-xl font-medium opacity-80">
-                                <li>• Video</li>
-                                <li>• Dance</li>
-                                <li>• Phone</li>
-                                <li>• App</li>
-                            </ul>
-                        </div>
-
-                        {/* Card B */}
-                        <div className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700 relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-full h-2 bg-purple-500"></div>
-                            <h3 className="text-purple-500 font-righteous text-xl md:text-3xl mb-4">Team B Challenge</h3>
-                            <p className="font-outfit text-lg md:text-2xl mb-4 md:mb-6">Describe: <strong className="text-2xl md:text-4xl block mt-2">SCHOOL</strong></p>
-                            <div className="h-px w-full bg-slate-200 dark:bg-slate-700 my-4 md:my-6"></div>
-                            <p className="text-pink-500 font-bold text-base md:text-xl mb-4 uppercase tracking-widest">🚫 You CANNOT say:</p>
-                            <ul className="space-y-2 font-outfit text-base md:text-xl font-medium opacity-80">
-                                <li>• Teacher</li>
-                                <li>• Lesson</li>
-                                <li>• Book</li>
-                                <li>• Study</li>
-                            </ul>
-                        </div>
+                <div className="flex-grow flex flex-col justify-center items-center w-full max-w-3xl">
+                     <div className="bg-white dark:bg-slate-800 p-8 md:p-12 rounded-[3rem] shadow-2xl border border-slate-200 dark:border-slate-700 relative overflow-hidden w-full">
+                        <div className={`absolute top-0 left-0 w-full h-4 bg-${item.color}-500`}></div>
+                        <h3 className={`text-${item.color}-500 font-righteous text-3xl md:text-5xl mb-6`}>{item.team} Challenge</h3>
+                        <p className="font-outfit text-2xl md:text-4xl mb-6">Describe: <strong className="text-4xl md:text-7xl block mt-4">{item.target}</strong></p>
+                        <div className="h-px w-full bg-slate-200 dark:bg-slate-700 my-6"></div>
+                        <p className="text-pink-500 font-bold text-xl md:text-3xl mb-6 uppercase tracking-widest">🚫 You CANNOT say:</p>
+                        <ul className="space-y-4 font-outfit text-2xl md:text-4xl font-medium opacity-80">
+                            {item.forbidden.map((word: string, i: number) => (
+                                <li key={i}>• {word}</li>
+                            ))}
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -174,39 +146,32 @@ export const ForbiddenWordSlide: React.FC = () => {
     )
 }
 
-export const DiscussionSlide: React.FC = () => {
+export const DiscussionSlide: React.FC<{ item: any }> = ({ item }) => {
+    const getIcon = (icon: string) => {
+        const props = { className: "w-16 h-16 md:w-32 md:h-32 mb-4" };
+        if (icon === 'gamepad') return <Gamepad2 {...props} />;
+        if (icon === 'fire') return <FireExtinguisher {...props} />;
+        if (icon === 'apple') return <Apple {...props} />;
+        if (icon === 'phone') return <Smartphone {...props} />;
+        return null;
+    }
+
     return (
         <SlideContainer>
             <div className="flex flex-col h-full justify-center">
-                 <h2 className="font-righteous text-2xl md:text-4xl lg:text-5xl text-sky-600 dark:text-sky-400 uppercase tracking-wider mb-8 md:mb-12 text-center flex-shrink-0">
+                 <h2 className="font-righteous text-2xl md:text-4xl lg:text-5xl text-sky-600 dark:text-sky-400 uppercase tracking-wider mb-8 text-center flex-shrink-0">
                     Discussion: This or That?
                 </h2>
-                <div className="flex-grow flex flex-col justify-center space-y-8 md:space-y-16 overflow-y-auto">
-                    {/* Matchup 1 */}
-                    <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-4xl mx-auto gap-4 md:gap-0">
-                        <div className="flex flex-col items-center text-sky-500">
-                            <Gamepad2 className="w-12 h-12 md:w-20 md:h-20" />
-                            <span className="font-righteous text-lg md:text-3xl mt-4 text-center">PUBG Mobile</span>
+                <div className="flex-grow flex flex-col justify-center items-center">
+                    <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl mx-auto gap-8 md:gap-0">
+                        <div className="flex flex-col items-center text-sky-500 transform hover:scale-110 transition-transform cursor-pointer" onClick={playClick}>
+                            {getIcon(item.leftIcon)}
+                            <span className="font-righteous text-2xl md:text-5xl text-center">{item.left}</span>
                         </div>
-                        <div className="mx-6 md:mx-20 font-bungee text-3xl md:text-6xl text-pink-500">VS</div>
-                        <div className="flex flex-col items-center text-sky-500">
-                            <FireExtinguisher className="w-12 h-12 md:w-20 md:h-20" />
-                            <span className="font-righteous text-lg md:text-3xl mt-4 text-center">Free Fire</span>
-                        </div>
-                    </div>
-
-                    <div className="w-1/2 h-px bg-slate-200 dark:bg-slate-700 mx-auto"></div>
-
-                     {/* Matchup 2 */}
-                     <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-4xl mx-auto gap-4 md:gap-0">
-                        <div className="flex flex-col items-center text-sky-500">
-                            <Apple className="w-12 h-12 md:w-20 md:h-20" />
-                            <span className="font-righteous text-lg md:text-3xl mt-4 text-center">iPhone</span>
-                        </div>
-                        <div className="mx-6 md:mx-20 font-bungee text-3xl md:text-6xl text-pink-500">VS</div>
-                        <div className="flex flex-col items-center text-sky-500">
-                            <Smartphone className="w-12 h-12 md:w-20 md:h-20" />
-                            <span className="font-righteous text-lg md:text-3xl mt-4 text-center">Samsung</span>
+                        <div className="mx-8 md:mx-32 font-bungee text-5xl md:text-9xl text-pink-500 animate-pulse">VS</div>
+                        <div className="flex flex-col items-center text-sky-500 transform hover:scale-110 transition-transform cursor-pointer" onClick={playClick}>
+                            {getIcon(item.rightIcon)}
+                            <span className="font-righteous text-2xl md:text-5xl text-center">{item.right}</span>
                         </div>
                     </div>
                 </div>
@@ -217,32 +182,28 @@ export const DiscussionSlide: React.FC = () => {
 
 // --- NEW GAMES ---
 
-export const EmojiIdiomsSlide: React.FC = () => {
+export const EmojiIdiomsSlide: React.FC<{ item: any, index: number }> = ({ item, index }) => {
   return (
     <SlideContainer>
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full items-center justify-center">
             <h2 className="font-righteous text-2xl md:text-4xl lg:text-5xl text-yellow-500 uppercase tracking-wider mb-2 text-center flex-shrink-0">
-                Game 10: Emoji Idioms
+                Game 10: Emoji Idioms #{index + 1}
             </h2>
-            <p className="text-center font-outfit text-base md:text-xl mb-6 md:mb-8 opacity-80 flex-shrink-0">Guess the English phrase!</p>
+            <p className="text-center font-outfit text-base md:text-xl mb-8 opacity-80 flex-shrink-0">Guess the English phrase!</p>
             
-            <div className="flex-grow overflow-y-auto min-h-0 pr-2 pb-4">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                    {EMOJI_IDIOMS.map((item, idx) => (
-                        <div key={idx} className="group relative h-48 md:h-64 perspective">
-                            <div className="w-full h-full bg-white dark:bg-slate-800 rounded-2xl shadow-xl border-2 border-yellow-500/30 flex flex-col items-center justify-center p-4 transition-all duration-500 transform group-hover:rotate-y-180 preserve-3d cursor-pointer">
-                                {/* Front */}
-                                <div className="absolute backface-hidden flex flex-col items-center">
-                                    <span className="text-4xl md:text-6xl mb-4 animate-bounce">{item.emojis}</span>
-                                    <span className="text-[10px] md:text-sm uppercase tracking-widest opacity-50">Hover to reveal</span>
-                                </div>
-                                {/* Back */}
-                                <div className="absolute inset-0 bg-yellow-500 rounded-2xl rotate-y-180 backface-hidden flex items-center justify-center p-4 text-center">
-                                    <span className="font-righteous text-white text-lg md:text-3xl shadow-sm">{item.answer}</span>
-                                </div>
-                            </div>
+            <div className="flex-grow flex items-center justify-center w-full max-w-4xl p-4">
+                 <div className="group relative w-full aspect-video perspective">
+                    <div className="w-full h-full bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border-4 border-yellow-500/30 flex flex-col items-center justify-center p-8 transition-all duration-700 transform group-hover:rotate-y-180 preserve-3d cursor-pointer" onMouseEnter={playClick}>
+                        {/* Front */}
+                        <div className="absolute backface-hidden flex flex-col items-center justify-center w-full h-full">
+                            <span className="text-6xl md:text-9xl mb-8 animate-bounce">{item.emojis}</span>
+                            <span className="text-lg md:text-2xl uppercase tracking-widest opacity-50 font-bold bg-slate-100 dark:bg-slate-900 px-4 py-2 rounded-full">Hover to reveal</span>
                         </div>
-                    ))}
+                        {/* Back */}
+                        <div className="absolute inset-0 bg-yellow-500 rounded-3xl rotate-y-180 backface-hidden flex items-center justify-center p-8 text-center">
+                            <span className="font-righteous text-white text-4xl md:text-7xl shadow-sm">{item.answer}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -250,73 +211,65 @@ export const EmojiIdiomsSlide: React.FC = () => {
   )
 }
 
-export const OddOneOutSlide: React.FC = () => {
-    // Track which answer is revealed for each set
-    const [revealedSet, setRevealedSet] = useState<number | null>(null);
-    // Track if the user made a wrong guess (for shake animation)
-    const [wrongGuess, setWrongGuess] = useState<{setIdx: number, item: string} | null>(null);
+export const OddOneOutSlide: React.FC<{ item: any, index: number }> = ({ item: set, index }) => {
+    const [revealed, setRevealed] = useState(false);
+    const [wrongGuess, setWrongGuess] = useState<string | null>(null);
 
-    const handleGuess = (setIdx: number, item: string, correct: string) => {
-        if (revealedSet === setIdx) return; // Already answered
-
-        if (item === correct) {
-            setRevealedSet(setIdx);
+    const handleGuess = (item: string) => {
+        if (revealed) return;
+        if (item === set.answer) {
+            setRevealed(true);
             setWrongGuess(null);
+            playCorrect();
         } else {
-            setWrongGuess({ setIdx, item });
-            // Clear shake effect after animation
+            setWrongGuess(item);
+            playIncorrect();
             setTimeout(() => setWrongGuess(null), 500);
         }
     };
 
     return (
         <SlideContainer>
-             <div className="flex flex-col h-full">
+             <div className="flex flex-col h-full items-center justify-center">
                 <div className="flex-shrink-0 text-center mb-6">
                     <h2 className="font-righteous text-2xl md:text-4xl lg:text-5xl text-orange-500 uppercase tracking-wider mb-2">
-                        Game 11: Odd One Out
+                        Game 11: Odd One Out #{index + 1}
                     </h2>
                     <p className="font-outfit text-base md:text-xl opacity-80">Click the item that doesn't belong!</p>
                 </div>
                 
-                <div className="flex-grow overflow-y-auto pr-2 pb-8">
-                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6 w-full">
-                        {ODD_ONE_OUT.map((set, idx) => (
-                            <div key={idx} className="bg-slate-100 dark:bg-slate-800 p-3 md:p-4 rounded-2xl flex flex-col lg:flex-row items-center justify-between border-l-4 md:border-l-8 border-orange-500 shadow-md">
-                                <div className="flex gap-2 mb-3 lg:mb-0 flex-wrap justify-center lg:justify-start flex-grow">
-                                    {set.items.map((item, i) => {
-                                        const isWrong = wrongGuess?.setIdx === idx && wrongGuess?.item === item;
-                                        const isCorrect = revealedSet === idx && item === set.answer;
-                                        const isRevealed = revealedSet === idx;
-
-                                        return (
-                                            <button 
-                                                key={i} 
-                                                onClick={() => handleGuess(idx, item, set.answer)}
-                                                className={`
-                                                    px-2 md:px-4 py-2 md:py-3 rounded-xl font-bold border-2 transition-all duration-300 text-xs md:text-base
-                                                    ${isWrong ? 'animate-shake bg-red-100 border-red-500 text-red-600' : ''}
-                                                    ${isCorrect ? 'bg-green-100 dark:bg-green-900/30 border-green-500 text-green-600 dark:text-green-400 scale-105' : ''}
-                                                    ${!isWrong && !isCorrect && !isRevealed ? 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-orange-400 hover:shadow-md' : ''}
-                                                    ${isRevealed && !isCorrect ? 'opacity-50 grayscale' : ''}
-                                                `}
-                                            >
-                                                {item}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                                
-                                <div className={`flex flex-col items-center lg:items-end lg:w-1/3 transition-all duration-500 ${revealedSet === idx ? 'opacity-100' : 'opacity-0'} ${revealedSet === idx ? 'max-h-20' : 'max-h-0'} lg:max-h-full overflow-hidden`}>
-                                    <div className="text-center lg:text-right">
-                                        <span className="block font-righteous text-sm md:text-xl text-green-500 mb-1">Correct!</span>
-                                        <span className="text-xs md:text-sm text-slate-600 dark:text-slate-300 font-outfit leading-tight block">
-                                            "{set.reason}"
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                <div className="flex-grow flex flex-col items-center justify-center w-full max-w-5xl">
+                    <div className="bg-slate-100 dark:bg-slate-800 p-8 md:p-12 rounded-[3rem] w-full border-l-8 md:border-l-[16px] border-orange-500 shadow-2xl">
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
+                             {set.items.map((option: string, i: number) => {
+                                 const isWrong = wrongGuess === option;
+                                 const isCorrect = revealed && option === set.answer;
+                                 return (
+                                     <button 
+                                         key={i} 
+                                         onClick={() => handleGuess(option)}
+                                         className={`
+                                             px-6 py-6 rounded-2xl font-bold border-4 transition-all duration-300 text-xl md:text-3xl
+                                             ${isWrong ? 'animate-shake bg-red-100 border-red-500 text-red-600' : ''}
+                                             ${isCorrect ? 'bg-green-100 dark:bg-green-900/30 border-green-500 text-green-600 dark:text-green-400 scale-105' : ''}
+                                             ${!isWrong && !isCorrect && !revealed ? 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-orange-400 hover:shadow-lg' : ''}
+                                             ${revealed && !isCorrect ? 'opacity-30 grayscale' : ''}
+                                         `}
+                                     >
+                                         {option}
+                                     </button>
+                                 );
+                             })}
+                         </div>
+                         
+                         {revealed && (
+                             <div className="text-center animate-fade-in-up">
+                                <span className="block font-righteous text-3xl md:text-5xl text-green-500 mb-4">Correct!</span>
+                                <span className="text-xl md:text-3xl text-slate-600 dark:text-slate-300 font-outfit block">
+                                    "{set.reason}"
+                                </span>
+                             </div>
+                         )}
                     </div>
                 </div>
             </div>
@@ -334,30 +287,26 @@ export const OddOneOutSlide: React.FC = () => {
     );
 }
 
-export const SlangScrambleSlide: React.FC = () => {
+export const SlangScrambleSlide: React.FC<{ item: any, index: number }> = ({ item, index }) => {
     return (
         <SlideContainer>
-            <div className="flex flex-col h-full">
-                <div className="flex-shrink-0 text-center mb-6">
+            <div className="flex flex-col h-full items-center justify-center">
+                <div className="flex-shrink-0 text-center mb-8">
                     <h2 className="font-righteous text-2xl md:text-4xl lg:text-5xl text-indigo-500 uppercase tracking-wider mb-2">
-                        Game 12: Slang Scramble
+                        Game 12: Slang Scramble #{index + 1}
                     </h2>
                     <p className="font-outfit text-base md:text-xl opacity-80">Unscramble the Gen Z words!</p>
                 </div>
                 
-                <div className="flex-grow overflow-y-auto pb-4">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 w-full px-2">
-                        {SLANG_SCRAMBLE.map((item, idx) => (
-                            <div key={idx} className="bg-white dark:bg-slate-800 p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-xl text-center group cursor-pointer hover:bg-indigo-500 transition-colors duration-300 flex flex-col justify-center h-40 md:h-56">
-                                <div className="font-bungee text-2xl md:text-4xl text-slate-300 group-hover:text-white/50 mb-2 md:mb-4 tracking-widest transition-colors">
-                                    {item.scrambled}
-                                </div>
-                                <div className="font-righteous text-xl md:text-3xl text-indigo-500 group-hover:text-white opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0">
-                                    {item.answer}
-                                </div>
-                                <p className="mt-2 md:mt-4 text-[10px] md:text-xs uppercase tracking-widest opacity-40 group-hover:text-white group-hover:opacity-80">Hover to solve</p>
-                            </div>
-                        ))}
+                <div className="flex-grow flex items-center justify-center w-full max-w-4xl">
+                    <div className="bg-white dark:bg-slate-800 p-12 md:p-20 rounded-[4rem] shadow-2xl text-center group cursor-pointer hover:bg-indigo-500 transition-colors duration-500 flex flex-col justify-center w-full aspect-[4/3] md:aspect-video border-4 border-slate-100 dark:border-slate-700" onMouseEnter={playClick}>
+                        <div className="font-bungee text-5xl md:text-8xl text-slate-300 group-hover:text-white/50 mb-8 tracking-[0.2em] transition-colors">
+                            {item.scrambled}
+                        </div>
+                        <div className="font-righteous text-4xl md:text-7xl text-indigo-500 group-hover:text-white opacity-0 group-hover:opacity-100 transition-all transform translate-y-8 group-hover:translate-y-0">
+                            {item.answer}
+                        </div>
+                        <p className="mt-8 text-lg uppercase tracking-widest opacity-40 group-hover:text-white group-hover:opacity-80">Hover to solve</p>
                     </div>
                 </div>
             </div>
@@ -365,53 +314,49 @@ export const SlangScrambleSlide: React.FC = () => {
     )
 }
 
-export const PriceIsRightSlide: React.FC = () => {
-    const [revealed, setRevealed] = useState<number | null>(null);
+export const PriceIsRightSlide: React.FC<{ item: any, index: number }> = ({ item, index }) => {
+    const [revealed, setRevealed] = useState(false);
 
-    const getIcon = (index: number) => {
+    const getIcon = (idx: number) => {
         const icons = [
-            <Gamepad2 className="w-6 h-6 md:w-10 md:h-10 text-emerald-600 dark:text-emerald-400" />,
-            <Smartphone className="w-6 h-6 md:w-10 md:h-10 text-emerald-600 dark:text-emerald-400" />,
-            <Car className="w-6 h-6 md:w-10 md:h-10 text-emerald-600 dark:text-emerald-400" />,
-            <Watch className="w-6 h-6 md:w-10 md:h-10 text-emerald-600 dark:text-emerald-400" />,
-            <div className="text-2xl">👟</div>,
-            <Plane className="w-6 h-6 md:w-10 md:h-10 text-emerald-600 dark:text-emerald-400" />
+            <Gamepad2 className="w-16 h-16 md:w-24 md:h-24 text-emerald-600 dark:text-emerald-400" />,
+            <Smartphone className="w-16 h-16 md:w-24 md:h-24 text-emerald-600 dark:text-emerald-400" />,
+            <Car className="w-16 h-16 md:w-24 md:h-24 text-emerald-600 dark:text-emerald-400" />,
+            <Watch className="w-16 h-16 md:w-24 md:h-24 text-emerald-600 dark:text-emerald-400" />,
+            <div className="text-6xl md:text-8xl">👟</div>,
+            <Plane className="w-16 h-16 md:w-24 md:h-24 text-emerald-600 dark:text-emerald-400" />
         ];
-        return icons[index] || <DollarSign className="w-6 h-6 md:w-10 md:h-10 text-emerald-600 dark:text-emerald-400" />;
+        return icons[idx] || <DollarSign className="w-16 h-16 md:w-24 md:h-24 text-emerald-600 dark:text-emerald-400" />;
     };
 
     return (
         <SlideContainer>
-            <div className="flex flex-col h-full">
-                <div className="flex-shrink-0 text-center mb-6">
+            <div className="flex flex-col h-full items-center justify-center">
+                <div className="flex-shrink-0 text-center mb-8">
                     <h2 className="font-righteous text-2xl md:text-4xl lg:text-5xl text-emerald-500 uppercase tracking-wider mb-2">
-                        Game 13: Price is Right 💰
+                        Game 13: Price is Right #{index + 1}
                     </h2>
                     <p className="font-outfit text-base md:text-xl opacity-80">Guess the price (in USD). Closest wins!</p>
                 </div>
 
-                <div className="flex-grow overflow-y-auto pr-2 pb-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-                        {PRICE_IS_RIGHT.map((item, idx) => (
-                            <div key={idx} className="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-2xl shadow-xl flex flex-row md:flex-col items-center justify-between md:h-72 border-l-8 md:border-l-0 md:border-t-8 border-emerald-500 hover:-translate-y-2 transition-transform duration-300">
-                                <div className="bg-emerald-100 dark:bg-emerald-900/30 p-3 md:p-6 rounded-full md:mb-6 flex-shrink-0">
-                                    {getIcon(idx)}
-                                </div>
-                                <h3 className="font-righteous text-base md:text-2xl text-center md:mb-4 md:h-16 flex items-center justify-center px-4">{item.item}</h3>
-                                <div className="flex-grow flex items-center justify-end md:justify-center w-full">
-                                    {revealed === idx ? (
-                                        <div className="animate-bounce font-bungee text-xl md:text-4xl text-emerald-500">{item.price}</div>
-                                    ) : (
-                                        <button 
-                                            onClick={() => setRevealed(idx)}
-                                            className="bg-slate-100 dark:bg-slate-700 hover:bg-emerald-500 hover:text-white text-slate-600 dark:text-slate-300 px-4 md:px-8 py-2 md:py-3 rounded-full font-bold transition-all shadow-sm border border-slate-200 dark:border-slate-600 text-sm md:text-base whitespace-nowrap"
-                                        >
-                                            Show Price
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
+                <div className="flex-grow flex items-center justify-center w-full max-w-4xl">
+                     <div className="bg-white dark:bg-slate-800 p-8 md:p-16 rounded-[3rem] shadow-2xl flex flex-col items-center justify-center w-full border-t-[16px] border-emerald-500 hover:scale-[1.02] transition-transform duration-300">
+                        <div className="bg-emerald-100 dark:bg-emerald-900/30 p-8 rounded-full mb-8">
+                            {getIcon(index)}
+                        </div>
+                        <h3 className="font-righteous text-3xl md:text-6xl text-center mb-12">{item.item}</h3>
+                        <div className="w-full flex justify-center">
+                            {revealed ? (
+                                <div className="animate-bounce font-bungee text-5xl md:text-8xl text-emerald-500">{item.price}</div>
+                            ) : (
+                                <button 
+                                    onClick={() => { setRevealed(true); playReveal(); }}
+                                    className="bg-slate-100 dark:bg-slate-700 hover:bg-emerald-500 hover:text-white text-slate-600 dark:text-slate-300 px-12 py-6 rounded-full font-bold transition-all shadow-lg border border-slate-200 dark:border-slate-600 text-2xl md:text-4xl"
+                                >
+                                    Show Price
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -444,6 +389,7 @@ export const MemoryMasterSlide: React.FC = () => {
     }, [gameState, timeLeft]);
 
     const startGame = () => {
+        playClick();
         setTimeLeft(10);
         setGameState('memorize');
     }
@@ -494,7 +440,7 @@ export const MemoryMasterSlide: React.FC = () => {
                          </div>
                          
                          {gameState === 'quiz' ? (
-                             <button onClick={() => setGameState('reveal')} className="bg-slate-800 dark:bg-slate-600 text-white font-bold px-8 py-3 rounded-full text-lg">
+                             <button onClick={() => { setGameState('reveal'); playCorrect(); }} className="bg-slate-800 dark:bg-slate-600 text-white font-bold px-8 py-3 rounded-full text-lg">
                                 Reveal Answer
                              </button>
                          ) : (

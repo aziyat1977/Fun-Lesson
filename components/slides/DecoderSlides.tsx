@@ -8,30 +8,46 @@ interface DecoderRoundProps {
 }
 
 export const DecoderRound: React.FC<DecoderRoundProps> = ({ title, items }) => {
+  const isSingle = items.length === 1;
+
   return (
     <SlideContainer>
-      <div className="flex flex-col h-full">
-        <h2 className="font-righteous text-2xl md:text-3xl lg:text-5xl text-sky-600 dark:text-sky-400 uppercase tracking-wider mb-4 md:mb-6 lg:mb-8 text-center md:text-left flex-shrink-0">
+      <div className="flex flex-col h-full items-center">
+        <h2 className="font-righteous text-2xl md:text-3xl lg:text-5xl text-sky-600 dark:text-sky-400 uppercase tracking-wider mb-4 md:mb-6 lg:mb-8 text-center flex-shrink-0">
           {title}
         </h2>
         {/* Scrollable grid area */}
-        <div className="flex-grow overflow-y-auto min-h-0 pr-2 pb-4">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
-            {items.map((item) => (
-                <div 
-                key={item.id}
-                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl md:rounded-2xl p-3 md:p-6 flex flex-col items-center justify-between h-36 md:h-48 lg:h-64 shadow-lg hover:-translate-y-1 md:hover:-translate-y-2 transition-transform duration-300 hover:border-purple-500"
-                >
-                <span className="font-righteous text-xs md:text-lg text-green-600 dark:text-green-400 bg-slate-100 dark:bg-slate-900 px-2 md:px-4 py-1 rounded-full border border-slate-200 dark:border-slate-700">
-                    #{item.id}
-                </span>
-                <span className="text-3xl md:text-4xl lg:text-6xl filter drop-shadow-md py-1 md:py-4">{item.emoji}</span>
-                <span className="font-outfit text-xs md:text-sm lg:text-base text-slate-500 dark:text-slate-400 italic text-center line-clamp-2">
-                    {item.hint}
-                </span>
+        <div className={`flex-grow w-full flex items-center justify-center ${!isSingle ? 'overflow-y-auto pr-2 pb-4' : 'p-4'}`}>
+            {isSingle ? (
+                // Single Item Layout
+                 <div className="bg-white dark:bg-slate-800 border-4 border-purple-500 rounded-3xl p-8 md:p-12 flex flex-col items-center justify-center shadow-2xl w-full max-w-4xl aspect-[4/3] md:aspect-video hover:scale-[1.02] transition-transform">
+                    <span className="font-righteous text-xl md:text-3xl text-green-600 dark:text-green-400 bg-slate-100 dark:bg-slate-900 px-4 py-2 rounded-full border border-slate-200 dark:border-slate-700 mb-6">
+                        #{items[0].id}
+                    </span>
+                    <span className="text-[8rem] md:text-[12rem] leading-none filter drop-shadow-xl mb-6">{items[0].emoji}</span>
+                    <span className="font-outfit text-2xl md:text-5xl text-slate-500 dark:text-slate-400 italic text-center">
+                        {items[0].hint}
+                    </span>
                 </div>
-            ))}
-            </div>
+            ) : (
+                // Grid Layout
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 lg:gap-6 w-full">
+                {items.map((item) => (
+                    <div 
+                    key={item.id}
+                    className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl md:rounded-2xl p-3 md:p-6 flex flex-col items-center justify-between h-36 md:h-48 lg:h-64 shadow-lg hover:-translate-y-1 md:hover:-translate-y-2 transition-transform duration-300 hover:border-purple-500"
+                    >
+                    <span className="font-righteous text-xs md:text-lg text-green-600 dark:text-green-400 bg-slate-100 dark:bg-slate-900 px-2 md:px-4 py-1 rounded-full border border-slate-200 dark:border-slate-700">
+                        #{item.id}
+                    </span>
+                    <span className="text-3xl md:text-4xl lg:text-6xl filter drop-shadow-md py-1 md:py-4">{item.emoji}</span>
+                    <span className="font-outfit text-xs md:text-sm lg:text-base text-slate-500 dark:text-slate-400 italic text-center line-clamp-2">
+                        {item.hint}
+                    </span>
+                    </div>
+                ))}
+                </div>
+            )}
         </div>
       </div>
     </SlideContainer>

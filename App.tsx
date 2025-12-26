@@ -13,12 +13,48 @@ import {
     PriceIsRightSlide,
     MemoryMasterSlide
 } from './components/slides/GameSlides';
+import {
+    CategoriesSlide,
+    TwoTruthsSlide,
+    QuotesSlide,
+    FactFictionSlide,
+    RiddlesSlide,
+    WYRSlide,
+    ConnectionsSlide,
+    ScrambleSlide,
+    SynonymSlide,
+    FlagSlide
+} from './components/slides/NewGameSlides';
 import { AIRemixSlide } from './components/slides/AIRemixSlide';
 import { FinalSlide } from './components/slides/FinalSlide';
-import { MOVIE_ITEMS, MUSIC_ITEMS, GAME_ITEMS, LEGEND_ITEMS } from './constants';
+import { 
+    MOVIE_ITEMS, 
+    MUSIC_ITEMS, 
+    GAME_ITEMS, 
+    LEGEND_ITEMS,
+    MANDELA_QUESTIONS,
+    ROBOT_LYRICS,
+    FORBIDDEN_WORD_ITEMS,
+    DISCUSSION_ITEMS,
+    EMOJI_IDIOMS,
+    ODD_ONE_OUT,
+    SLANG_SCRAMBLE,
+    PRICE_IS_RIGHT,
+    CATEGORIES_ITEMS,
+    TRUTH_LIE_ITEMS,
+    QUOTES_ITEMS,
+    FACT_FICTION_ITEMS,
+    RIDDLE_ITEMS,
+    WYR_ITEMS,
+    CONNECTION_ITEMS,
+    SCRAMBLE_ITEMS,
+    SYNONYM_ITEMS,
+    FLAG_ITEMS
+} from './constants';
 import { Moon, Sun, ChevronRight, ChevronLeft } from 'lucide-react';
+import { playClick, playSwipe } from './utils/sound';
 
-// SVGs for answer reveals
+// SVGs for answer reveals (Keep these for AnswerRound summaries)
 const WednesdaySVG = (
   <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
     <path d="M120 100 Q200 50 280 100 L280 300 Q280 350 250 350 L240 350 Q240 250 240 200 L260 150 Q200 160 140 150 L160 200 Q160 250 160 350 L150 350 Q120 350 120 300 Z" fill="#1f2937"/>
@@ -57,37 +93,100 @@ const App: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isDark, setIsDark] = useState(true);
 
-  // Array of slides components in order
+  // Dynamically generate the slide deck for maximum visibility
   const slides = [
     <TitleSlide />,
     <WarmUpSlide />,
-    <DecoderRound title="Round 1: Movies & TV" items={MOVIE_ITEMS} />,
+    
+    // --- Round 1 ---
+    ...MOVIE_ITEMS.map(item => <DecoderRound key={`mov-${item.id}`} title="Round 1: Movies & TV" items={[item]} />),
     <AnswerRound title="Answers: Movies" items={MOVIE_ITEMS} SvgGraphic={WednesdaySVG} />,
-    <DecoderRound title="Round 2: Global Music Hits" items={MUSIC_ITEMS} />,
+    
+    // --- Round 2 ---
+    ...MUSIC_ITEMS.map(item => <DecoderRound key={`mus-${item.id}`} title="Round 2: Global Music Hits" items={[item]} />),
     <AnswerRound title="Answers: Music" items={MUSIC_ITEMS} />,
-    <DecoderRound title="Round 3: Games & Apps" items={GAME_ITEMS} />,
+    
+    // --- Round 3 ---
+    ...GAME_ITEMS.map(item => <DecoderRound key={`game-${item.id}`} title="Round 3: Games & Apps" items={[item]} />),
     <AnswerRound title="Answers: Games" items={GAME_ITEMS} SvgGraphic={PubgSVG} />,
-    <DecoderRound title="Round 4: Legends & Trends" items={LEGEND_ITEMS} />,
+    
+    // --- Round 4 ---
+    ...LEGEND_ITEMS.map(item => <DecoderRound key={`leg-${item.id}`} title="Round 4: Legends & Trends" items={[item]} />),
     <AnswerRound title="Answers: Legends" items={LEGEND_ITEMS} SvgGraphic={MessiRonaldoSVG} />,
-    <MandelaSlide />,
-    <RobotLyricsSlide />,
+    
+    // --- Mandela ---
+    ...MANDELA_QUESTIONS.map((item, idx) => <MandelaSlide key={`man-${idx}`} item={item} index={idx} />),
+    
+    // --- Robot Lyrics ---
+    ...ROBOT_LYRICS.map((item, idx) => <RobotLyricsSlide key={`rob-${idx}`} item={item} index={idx} />),
+    
     <AIRemixSlide />,
-    <ZoomInSlide />,
-    <ForbiddenWordSlide />,
-    <EmojiIdiomsSlide />,
-    <OddOneOutSlide />,
-    <SlangScrambleSlide />,
-    <PriceIsRightSlide />,
-    <MemoryMasterSlide />,
-    <DiscussionSlide />,
+    
+    // --- Zoom In ---
+    <ZoomInSlide index={0} />,
+    <ZoomInSlide index={1} />,
+    <ZoomInSlide index={2} />,
+    
+    // --- Forbidden Word ---
+    ...FORBIDDEN_WORD_ITEMS.map((item, idx) => <ForbiddenWordSlide key={`forb-${idx}`} item={item} />),
+    
+    // --- Emoji Idioms ---
+    ...EMOJI_IDIOMS.map((item, idx) => <EmojiIdiomsSlide key={`eid-${idx}`} item={item} index={idx} />),
+    
+    // --- Odd One Out ---
+    ...ODD_ONE_OUT.map((item, idx) => <OddOneOutSlide key={`odd-${idx}`} item={item} index={idx} />),
+    
+    // --- Slang Scramble ---
+    ...SLANG_SCRAMBLE.map((item, idx) => <SlangScrambleSlide key={`slang-${idx}`} item={item} index={idx} />),
+    
+    // --- Price is Right ---
+    ...PRICE_IS_RIGHT.map((item, idx) => <PriceIsRightSlide key={`price-${idx}`} item={item} index={idx} />),
+    
+    <MemoryMasterSlide />, // Keep as single unit due to game logic
+    
+    // --- Categories ---
+    ...CATEGORIES_ITEMS.map((item, idx) => <CategoriesSlide key={`cat-${idx}`} item={item} index={idx} />),
+    
+    // --- Two Truths ---
+    ...TRUTH_LIE_ITEMS.map((item, idx) => <TwoTruthsSlide key={`truth-${idx}`} item={item} index={idx} />),
+    
+    // --- Quotes ---
+    ...QUOTES_ITEMS.map((item, idx) => <QuotesSlide key={`quote-${idx}`} item={item} index={idx} />),
+    
+    // --- Fact Fiction ---
+    ...FACT_FICTION_ITEMS.map((item, idx) => <FactFictionSlide key={`ff-${idx}`} item={item} index={idx} />),
+    
+    // --- Riddles ---
+    ...RIDDLE_ITEMS.map((item, idx) => <RiddlesSlide key={`rid-${idx}`} item={item} index={idx} />),
+    
+    // --- WYR ---
+    ...WYR_ITEMS.map((item, idx) => <WYRSlide key={`wyr-${idx}`} item={item} index={idx} />),
+    
+    // --- Connections ---
+    ...CONNECTION_ITEMS.map((item, idx) => <ConnectionsSlide key={`conn-${idx}`} item={item} index={idx} />),
+    
+    // --- Scramble ---
+    ...SCRAMBLE_ITEMS.map((item, idx) => <ScrambleSlide key={`scram-${idx}`} item={item} index={idx} />),
+    
+    // --- Synonym ---
+    ...SYNONYM_ITEMS.map((item, idx) => <SynonymSlide key={`syn-${idx}`} item={item} index={idx} />),
+    
+    // --- Flag ---
+    ...FLAG_ITEMS.map((item, idx) => <FlagSlide key={`flag-${idx}`} item={item} index={idx} />),
+    
+    // --- Discussion ---
+    ...DISCUSSION_ITEMS.map((item, idx) => <DiscussionSlide key={`disc-${idx}`} item={item} />),
+    
     <FinalSlide />
   ];
 
   const nextSlide = () => {
+    playSwipe();
     setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
   const prevSlide = () => {
+    playSwipe();
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
@@ -109,7 +208,7 @@ const App: React.FC = () => {
       
       {/* Theme Toggle */}
       <button 
-        onClick={() => setIsDark(!isDark)}
+        onClick={() => { setIsDark(!isDark); playClick(); }}
         className="fixed top-2 right-2 md:top-6 md:right-6 z-50 p-2 md:p-3 rounded-full bg-white dark:bg-slate-800 text-sky-500 shadow-xl border-2 border-sky-500 hover:scale-110 transition-transform"
       >
         {isDark ? <Sun size={20} className="md:w-6 md:h-6" /> : <Moon size={20} className="md:w-6 md:h-6" />}

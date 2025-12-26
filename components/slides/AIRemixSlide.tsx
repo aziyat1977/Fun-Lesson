@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SlideContainer } from '../SlideContainer';
 import { Search, Eye } from 'lucide-react';
+import { playReveal } from '../../utils/sound';
 
 export const AIRemixSlide: React.FC = () => {
     const [revealed, setRevealed] = useState(false);
@@ -22,7 +23,7 @@ export const AIRemixSlide: React.FC = () => {
                     </ul>
                     <br />
                     <div 
-                        onClick={() => setRevealed(!revealed)}
+                        onClick={() => { setRevealed(!revealed); playReveal(); }}
                         className={`font-righteous text-2xl md:text-3xl transition-colors cursor-pointer flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/50 -ml-2 select-none ${revealed ? 'text-pink-500' : 'text-green-500 dark:text-green-400'}`}
                     >
                         {revealed ? "It's Harry Potter! ⚡" : "Who is it? (Click to Reveal)"}

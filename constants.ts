@@ -1,4 +1,4 @@
-import { QuizItem } from './types';
+import { QuizItem, SimpleQuestion, TruthLieItem, BinaryChoiceItem, WYRItem, ConnectionItem, SynonymItem } from './types';
 
 export const MOVIE_ITEMS: QuizItem[] = [
   { id: 1, emoji: '⚡👓🪄', hint: 'Classic Magic Movie', answer: 'Harry Potter' },
@@ -108,4 +108,152 @@ export const PRICE_IS_RIGHT = [
     { item: "Rolex Submariner", price: "$10,250" },
     { item: "Air Jordan 1 (1985)", price: "$25,000" },
     { item: "Gulfstream Jet", price: "$65,000,000" }
+];
+
+export const FORBIDDEN_WORD_ITEMS = [
+    { 
+        team: "Team A", color: "sky", target: "TIKTOK", 
+        forbidden: ["Video", "Dance", "Phone", "App"] 
+    },
+    { 
+        team: "Team B", color: "purple", target: "SCHOOL", 
+        forbidden: ["Teacher", "Lesson", "Book", "Study"] 
+    }
+];
+
+export const DISCUSSION_ITEMS = [
+    { left: "PUBG Mobile", leftIcon: "gamepad", right: "Free Fire", rightIcon: "fire" },
+    { left: "iPhone", leftIcon: "apple", right: "Samsung", rightIcon: "phone" },
+];
+
+// --- NEW GAMES DATA ---
+
+export const CATEGORIES_ITEMS: SimpleQuestion[] = [
+    { question: "Fruits that are Red", answer: "Apple, Strawberry, Cherry, Watermelon..." },
+    { question: "Things with Wheels", answer: "Car, Bike, Bus, Skateboard..." },
+    { question: "Animals that lay eggs", answer: "Chicken, Snake, Lizard, Penguin..." },
+    { question: "Sports played with a ball", answer: "Football, Tennis, Basketball, Golf..." },
+    { question: "Things in a bathroom", answer: "Toothbrush, Soap, Towel, Mirror..." },
+    { question: "Cold foods", answer: "Ice Cream, Salad, Yogurt, Sushi..." },
+    { question: "Musical Instruments", answer: "Guitar, Piano, Drums, Violin..." },
+    { question: "Countries in Europe", answer: "France, Spain, Germany, Italy..." },
+    { question: "Things that fly", answer: "Bird, Plane, Bee, Helicopter..." },
+    { question: "Pizza Toppings", answer: "Cheese, Pepperoni, Mushroom, Olive..." },
+];
+
+export const TRUTH_LIE_ITEMS: TruthLieItem[] = [
+    { topic: "Bananas", options: [{ text: "Grow on trees", isLie: true }, { text: "Are curved due to sun", isLie: false }, { text: "Are technically berries", isLie: false }], explanation: "Bananas grow on giant herbs, not trees!" },
+    { topic: "Octopus", options: [{ text: "Has 3 hearts", isLie: false }, { text: "Has blue blood", isLie: false }, { text: "Has 6 arms", isLie: true }], explanation: "They have 8 arms (tentacles)." },
+    { topic: "Venus", options: [{ text: "Hottest planet", isLie: false }, { text: "Spins backwards", isLie: false }, { text: "Has 2 moons", isLie: true }], explanation: "Venus has 0 moons." },
+    { topic: "Humans", options: [{ text: "Share 50% DNA with bananas", isLie: false }, { text: "Shed 40lbs skin in life", isLie: false }, { text: "Smallest bone is in nose", isLie: true }], explanation: "Smallest bone (stapes) is in the ear." },
+    { topic: "Honey", options: [{ text: "Never spoils", isLie: false }, { text: "Is bee vomit", isLie: false }, { text: "Made from pollen", isLie: true }], explanation: "It's made from nectar, not pollen." },
+    { topic: "Bulls", options: [{ text: "Hate the color red", isLie: true }, { text: "Have 4 stomachs", isLie: false }, { text: "Eat grass", isLie: false }], explanation: "Bulls are colorblind! They hate the movement." },
+    { topic: "Strawberries", options: [{ text: "Are not berries", isLie: false }, { text: "Seeds are on outside", isLie: false }, { text: "Grow on bushes", isLie: true }], explanation: "They grow on small plants (runners), not bushes." },
+    { topic: "Space", options: [{ text: "Space is silent", isLie: false }, { text: "Space is cold", isLie: false }, { text: "Sun is yellow", isLie: true }], explanation: "The sun is actually white." },
+    { topic: "Water", options: [{ text: "Expands when frozen", isLie: false }, { text: "70% of earth surface", isLie: false }, { text: "Is completely colorless", isLie: true }], explanation: "Water has a very slight blue tint." },
+    { topic: "Everest", options: [{ text: "Tallest mountain", isLie: false }, { text: "Grows 4mm/year", isLie: false }, { text: "Located in Europe", isLie: true }], explanation: "It is in Asia (Nepal/China)." },
+];
+
+export const QUOTES_ITEMS: SimpleQuestion[] = [
+    { question: "To be or not to be", answer: "William Shakespeare" },
+    { question: "I have a dream", answer: "Martin Luther King Jr." },
+    { question: "May the Force be with you", answer: "Star Wars (Han Solo/Obi-Wan)" },
+    { question: "Just Do It", answer: "Nike" },
+    { question: "Winter is Coming", answer: "Game of Thrones" },
+    { question: "You're fired!", answer: "Donald Trump (The Apprentice)" },
+    { question: "E=mc²", answer: "Albert Einstein" },
+    { question: "Stay Hungry, Stay Foolish", answer: "Steve Jobs" },
+    { question: "Float like a butterfly, sting like a bee", answer: "Muhammad Ali" },
+    { question: "I'm the king of the world!", answer: "Titanic (Jack)" },
+];
+
+export const FACT_FICTION_ITEMS: BinaryChoiceItem[] = [
+    { statement: "Goldfish have a 3-second memory.", isTrue: false, fact: "They can remember things for months." },
+    { statement: "Bulls get angry when they see red.", isTrue: false, fact: "They are colorblind." },
+    { statement: "The Great Wall of China is visible from space.", isTrue: false, fact: "It is too narrow to see without aid." },
+    { statement: "Bananas are berries.", isTrue: true, fact: "Botanically, they are berries!" },
+    { statement: "Humans share 50% of DNA with bananas.", isTrue: true, fact: "Life shares much common DNA." },
+    { statement: "Napoleon was very short.", isTrue: false, fact: "He was average height for his time." },
+    { statement: "Vikings wore horned helmets.", isTrue: false, fact: "Opera costumes created that myth." },
+    { statement: "You swallow 8 spiders a year in your sleep.", isTrue: false, fact: "Spiders avoid breathing humans." },
+    { statement: "An ostrich's eye is bigger than its brain.", isTrue: true, fact: "Their eyes are huge." },
+    { statement: "Water makes up 60% of the adult human body.", isTrue: true, fact: "We are mostly water." },
+];
+
+export const RIDDLE_ITEMS: SimpleQuestion[] = [
+    { question: "What has to be broken before you can use it?", answer: "An Egg" },
+    { question: "I’m tall when I’m young, and I’m short when I’m old.", answer: "A Candle" },
+    { question: "What is full of holes but still holds water?", answer: "A Sponge" },
+    { question: "What is always in front of you but can’t be seen?", answer: "The Future" },
+    { question: "What goes up but never comes down?", answer: "Your Age" },
+    { question: "The more of this there is, the less you see.", answer: "Darkness" },
+    { question: "What has one eye, but can’t see?", answer: "A Needle" },
+    { question: "What has many keys but can’t open a single lock?", answer: "A Piano" },
+    { question: "What gets wet while drying?", answer: "A Towel" },
+    { question: "I possess cities but no houses, mountains but no trees. What am I?", answer: "A Map" },
+];
+
+export const WYR_ITEMS: WYRItem[] = [
+    { optionA: "Be Rich & Unknown", optionB: "Be Poor & Famous" },
+    { optionA: "Fight 1 horse-sized duck", optionB: "Fight 100 duck-sized horses" },
+    { optionA: "Say everything on your mind", optionB: "Never be able to speak again" },
+    { optionA: "Live in the past (1900s)", optionB: "Live in the future (3000s)" },
+    { optionA: "Have a Pause button", optionB: "Have a Rewind button" },
+    { optionA: "Be able to Fly", optionB: "Be Invisible" },
+    { optionA: "Give up your Phone", optionB: "Give up Sugar/Candy" },
+    { optionA: "Be hairy all over", optionB: "Have no hair anywhere" },
+    { optionA: "Live in the Ocean", optionB: "Live in Space" },
+    { optionA: "Be a Wizard", optionB: "Be a Superhero" },
+];
+
+export const CONNECTION_ITEMS: ConnectionItem[] = [
+    { words: ["Rain", "Bow", "Tie"], answer: "Bow" },
+    { words: ["Tooth", "Hair", "Paint"], answer: "Brush" },
+    { words: ["Sun", "Flower", "Shine"], answer: "Sun" },
+    { words: ["Fire", "Work", "Place"], answer: "Fire" },
+    { words: ["Book", "Shelf", "Mark"], answer: "Book" },
+    { words: ["Snow", "Ball", "Man"], answer: "Snow" },
+    { words: ["Butter", "Fly", "Cup"], answer: "Butter" },
+    { words: ["Sea", "Shell", "Weed"], answer: "Sea" },
+    { words: ["Pan", "Cake", "Handle"], answer: "Pan" },
+    { words: ["Apple", "Pine", "Juice"], answer: "Apple" },
+];
+
+export const SCRAMBLE_ITEMS: SimpleQuestion[] = [
+    { question: "is / name / My / Bond / James", answer: "My name is James Bond." },
+    { question: "like / I / playing / football", answer: "I like playing football." },
+    { question: "are / How / you / today?", answer: "How are you today?" },
+    { question: "went / yesterday / I / school / to", answer: "I went to school yesterday." },
+    { question: "favorite / is / What / color / your?", answer: "What is your favorite color?" },
+    { question: "English / learning / fun / is", answer: "Learning English is fun." },
+    { question: "cat / The / mat / on / sat / the", answer: "The cat sat on the mat." },
+    { question: "pizza / want / dinner / for / I", answer: "I want pizza for dinner." },
+    { question: "time / What / it / is?", answer: "What time is it?" },
+    { question: "see / Can / the / you / stars?", answer: "Can you see the stars?" },
+];
+
+export const SYNONYM_ITEMS: SynonymItem[] = [
+    { word: "HAPPY", options: ["Joyful", "Sad", "Angry"], correctIndex: 0 },
+    { word: "BIG", options: ["Tiny", "Huge", "Soft"], correctIndex: 1 },
+    { word: "FAST", options: ["Slow", "Quick", "Heavy"], correctIndex: 1 },
+    { word: "SMART", options: ["Clever", "Silly", "Tall"], correctIndex: 0 },
+    { word: "RICH", options: ["Poor", "Kind", "Wealthy"], correctIndex: 2 },
+    { word: "HARD", options: ["Easy", "Difficult", "Soft"], correctIndex: 1 },
+    { word: "START", options: ["End", "Begin", "Stop"], correctIndex: 1 },
+    { word: "SCARE", options: ["Frighten", "Laugh", "Sleep"], correctIndex: 0 },
+    { word: "BEAUTIFUL", options: ["Ugly", "Pretty", "Old"], correctIndex: 1 },
+    { word: "QUIET", options: ["Loud", "Busy", "Silent"], correctIndex: 2 },
+];
+
+export const FLAG_ITEMS: SimpleQuestion[] = [
+    { question: "🇺🇸", answer: "USA" },
+    { question: "🇬🇧", answer: "UK" },
+    { question: "🇨🇦", answer: "Canada" },
+    { question: "🇯🇵", answer: "Japan" },
+    { question: "🇧🇷", answer: "Brazil" },
+    { question: "🇫🇷", answer: "France" },
+    { question: "🇩🇪", answer: "Germany" },
+    { question: "🇮🇹", answer: "Italy" },
+    { question: "🇪🇸", answer: "Spain" },
+    { question: "🇦🇺", answer: "Australia" },
 ];
