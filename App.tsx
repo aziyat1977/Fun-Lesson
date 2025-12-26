@@ -74,7 +74,6 @@ const App: React.FC = () => {
     <AIRemixSlide />,
     <ZoomInSlide />,
     <ForbiddenWordSlide />,
-    // New Games Added Here
     <EmojiIdiomsSlide />,
     <OddOneOutSlide />,
     <SlangScrambleSlide />,
@@ -106,39 +105,43 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className={`fixed inset-0 w-full h-full flex items-center justify-center p-4 md:p-8 transition-colors duration-500 ${isDark ? 'bg-slate-950 dark' : 'bg-slate-100'}`}>
+    <div className={`fixed inset-0 w-full h-full flex flex-col items-center justify-center transition-colors duration-500 overflow-hidden ${isDark ? 'bg-slate-950 dark' : 'bg-slate-100'}`}>
       
       {/* Theme Toggle */}
       <button 
         onClick={() => setIsDark(!isDark)}
-        className="fixed top-4 right-4 md:top-6 md:right-6 z-50 p-3 rounded-full bg-white dark:bg-slate-800 text-sky-500 shadow-xl border-2 border-sky-500 hover:scale-110 transition-transform"
+        className="fixed top-2 right-2 md:top-6 md:right-6 z-50 p-2 md:p-3 rounded-full bg-white dark:bg-slate-800 text-sky-500 shadow-xl border-2 border-sky-500 hover:scale-110 transition-transform"
       >
-        {isDark ? <Sun size={24} /> : <Moon size={24} />}
+        {isDark ? <Sun size={20} className="md:w-6 md:h-6" /> : <Moon size={20} className="md:w-6 md:h-6" />}
       </button>
 
-      {/* Main Slide Deck */}
-      <div className="w-full max-w-[1400px] aspect-[16/9] max-h-[90vh] relative">
-        {slides[currentSlide]}
+      {/* Main Slide Deck - Full Screen Responsive */}
+      <div className="w-full h-full p-2 md:p-4 lg:p-8 flex items-center justify-center">
+        <div className="w-full h-full max-w-[1600px] relative transition-all duration-300">
+           {slides[currentSlide]}
+        </div>
       </div>
 
       {/* Navigation Controls */}
-      <div className="fixed bottom-4 md:bottom-6 left-0 right-0 flex justify-center gap-4 z-50">
-        <button 
-          onClick={prevSlide}
-          className="p-3 md:p-4 rounded-full bg-slate-800/80 dark:bg-slate-700/80 text-white hover:bg-sky-500 backdrop-blur-sm transition-colors shadow-lg disabled:opacity-50"
-          disabled={currentSlide === 0}
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <div className="bg-slate-800/80 dark:bg-slate-700/80 backdrop-blur-sm text-white px-4 md:px-6 py-2 rounded-full flex items-center font-outfit font-bold text-sm md:text-base">
-            {currentSlide + 1} / {slides.length}
+      <div className="fixed bottom-4 left-0 right-0 flex justify-center gap-4 z-50 pointer-events-none">
+        <div className="pointer-events-auto flex gap-4">
+            <button 
+            onClick={prevSlide}
+            className="p-3 rounded-full bg-slate-800/80 dark:bg-slate-700/80 text-white hover:bg-sky-500 backdrop-blur-sm transition-colors shadow-lg disabled:opacity-50"
+            disabled={currentSlide === 0}
+            >
+            <ChevronLeft size={24} />
+            </button>
+            <div className="bg-slate-800/80 dark:bg-slate-700/80 backdrop-blur-sm text-white px-4 py-2 rounded-full flex items-center font-outfit font-bold shadow-lg">
+                {currentSlide + 1} / {slides.length}
+            </div>
+            <button 
+            onClick={nextSlide}
+            className="p-3 rounded-full bg-slate-800/80 dark:bg-slate-700/80 text-white hover:bg-sky-500 backdrop-blur-sm transition-colors shadow-lg"
+            >
+            <ChevronRight size={24} />
+            </button>
         </div>
-        <button 
-          onClick={nextSlide}
-          className="p-3 md:p-4 rounded-full bg-slate-800/80 dark:bg-slate-700/80 text-white hover:bg-sky-500 backdrop-blur-sm transition-colors shadow-lg"
-        >
-          <ChevronRight size={24} />
-        </button>
       </div>
     </div>
   );
