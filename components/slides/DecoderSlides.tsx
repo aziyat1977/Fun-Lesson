@@ -71,6 +71,39 @@ export const DecoderRound: React.FC<DecoderRoundProps> = ({ title, items, diffic
   );
 };
 
+export const RevealSlide: React.FC<{ title: string; item: QuizItem }> = ({ title, item }) => {
+  return (
+    <SlideContainer>
+      <div className="flex flex-col h-full items-center justify-center">
+        <h2 className="font-righteous text-2xl md:text-3xl lg:text-5xl text-green-600 dark:text-green-400 uppercase tracking-wider mb-4 md:mb-8 text-center flex-shrink-0">
+          {title}
+        </h2>
+        <div className="flex-grow w-full flex items-center justify-center p-4">
+             <div className="bg-white dark:bg-slate-800 border-4 border-green-500 rounded-3xl p-8 md:p-12 flex flex-col items-center justify-center shadow-2xl w-full max-w-4xl aspect-[4/3] md:aspect-video animate-pop-in relative overflow-hidden">
+                {/* Background glow/effect */}
+                <div className="absolute inset-0 bg-green-500/5 dark:bg-green-500/10 pointer-events-none" />
+                
+                <span className="font-righteous text-xl md:text-3xl text-slate-400 dark:text-slate-500 mb-6 relative z-10">
+                    #{item.id}
+                </span>
+                <span className="text-[6rem] md:text-[10rem] leading-none filter drop-shadow-xl mb-6 relative z-10 animate-bounce">
+                    {item.emoji}
+                </span>
+                 <div className="relative z-10 text-center">
+                    <span className="font-outfit text-4xl md:text-6xl font-bold text-slate-800 dark:text-white block drop-shadow-sm">
+                        {item.answer}
+                    </span>
+                    <span className="font-outfit text-xl text-slate-500 mt-2 block italic">
+                        {item.hint}
+                    </span>
+                </div>
+            </div>
+        </div>
+      </div>
+    </SlideContainer>
+  );
+};
+
 interface AnswerRoundProps {
   title: string;
   items: QuizItem[];

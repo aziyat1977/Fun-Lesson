@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>Exam Recovery Mode</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -17,6 +17,18 @@
             },
             animation: {
               'spin-slow': 'spin 12s linear infinite',
+              'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+              'pop-in': 'popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+            },
+            keyframes: {
+              fadeInUp: {
+                '0%': { opacity: '0', transform: 'translateY(20px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              popIn: {
+                '0%': { opacity: '0', transform: 'scale(0.5)' },
+                '100%': { opacity: '1', transform: 'scale(1)' },
+              }
             },
             backgroundImage: {
               'grid-pattern': "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
@@ -29,10 +41,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bungee+Spice&family=Outfit:wght@400;500;700&family=Righteous&display=swap" rel="stylesheet">
     <style>
-      body {
+      html, body {
+        height: 100%;
+        width: 100%;
         margin: 0;
-        overflow: hidden; /* Prevent scrolling on body, let app handle it */
-        background-color: #0f172a; /* Fallback dark bg */
+        padding: 0;
+        overflow: hidden; /* App handles scrolling internally */
+        background-color: #0f172a;
+        overscroll-behavior: none; /* Prevent rubber-banding on Mac/iOS */
+        touch-action: manipulation; /* Improve touch response */
       }
       
       /* Smooth transitions for theme changes */
@@ -40,6 +57,22 @@
         transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         transition-duration: 300ms;
+        box-sizing: border-box;
+      }
+
+      /* Custom Scrollbar for inner containers */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: rgba(156, 163, 175, 0.5);
+        border-radius: 20px;
+      }
+      .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: rgba(71, 85, 105, 0.5);
       }
     </style>
   <script type="importmap">
@@ -54,6 +87,6 @@
 </script>
 </head>
   <body>
-    <div id="root"></div>
+    <div id="root" class="w-full h-full"></div>
   </body>
 </html>
