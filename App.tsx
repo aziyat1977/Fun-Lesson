@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { TitleSlide, WarmUpSlide } from './components/slides/IntroSlides';
 import { DecoderRound, AnswerRound } from './components/slides/DecoderSlides';
@@ -51,8 +52,9 @@ import {
     SYNONYM_ITEMS,
     FLAG_ITEMS
 } from './constants';
-import { Moon, Sun, ChevronRight, ChevronLeft } from 'lucide-react';
-import { playClick, playSwipe } from './utils/sound';
+import { Moon, Sun, ChevronRight, ChevronLeft, Music, VolumeX } from 'lucide-react';
+import { playClick, playSwipe, toggleBackgroundMusic } from './utils/sound';
+import { Difficulty } from './types';
 
 // SVGs for answer reveals (Keep these for AnswerRound summaries)
 const WednesdaySVG = (
@@ -92,30 +94,32 @@ const MessiRonaldoSVG = (
 const App: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isDark, setIsDark] = useState(true);
+  const [isMusicOn, setIsMusicOn] = useState(false);
+  const [difficulty, setDifficulty] = useState<Difficulty>('easy');
 
   // Dynamically generate the slide deck for maximum visibility
   const slides = [
-    <TitleSlide />,
+    <TitleSlide difficulty={difficulty} setDifficulty={setDifficulty} />,
     <WarmUpSlide />,
     
     // --- Round 1 ---
-    ...MOVIE_ITEMS.map(item => <DecoderRound key={`mov-${item.id}`} title="Round 1: Movies & TV" items={[item]} />),
+    ...MOVIE_ITEMS.map(item => <DecoderRound key={`mov-${item.id}`} title="Round 1: Movies & TV" items={[item]} difficulty={difficulty} />),
     <AnswerRound title="Answers: Movies" items={MOVIE_ITEMS} SvgGraphic={WednesdaySVG} />,
     
     // --- Round 2 ---
-    ...MUSIC_ITEMS.map(item => <DecoderRound key={`mus-${item.id}`} title="Round 2: Global Music Hits" items={[item]} />),
+    ...MUSIC_ITEMS.map(item => <DecoderRound key={`mus-${item.id}`} title="Round 2: Global Music Hits" items={[item]} difficulty={difficulty} />),
     <AnswerRound title="Answers: Music" items={MUSIC_ITEMS} />,
     
     // --- Round 3 ---
-    ...GAME_ITEMS.map(item => <DecoderRound key={`game-${item.id}`} title="Round 3: Games & Apps" items={[item]} />),
+    ...GAME_ITEMS.map(item => <DecoderRound key={`game-${item.id}`} title="Round 3: Games & Apps" items={[item]} difficulty={difficulty} />),
     <AnswerRound title="Answers: Games" items={GAME_ITEMS} SvgGraphic={PubgSVG} />,
     
     // --- Round 4 ---
-    ...LEGEND_ITEMS.map(item => <DecoderRound key={`leg-${item.id}`} title="Round 4: Legends & Trends" items={[item]} />),
+    ...LEGEND_ITEMS.map(item => <DecoderRound key={`leg-${item.id}`} title="Round 4: Legends & Trends" items={[item]} difficulty={difficulty} />),
     <AnswerRound title="Answers: Legends" items={LEGEND_ITEMS} SvgGraphic={MessiRonaldoSVG} />,
     
     // --- Mandela ---
-    ...MANDELA_QUESTIONS.map((item, idx) => <MandelaSlide key={`man-${idx}`} item={item} index={idx} />),
+    ...MANDELA_QUESTIONS.map((item, idx) => <MandelaSlide key={`man-${idx}`} item={item} index={idx} difficulty={difficulty} />),
     
     // --- Robot Lyrics ---
     ...ROBOT_LYRICS.map((item, idx) => <RobotLyricsSlide key={`rob-${idx}`} item={item} index={idx} />),
@@ -123,15 +127,15 @@ const App: React.FC = () => {
     <AIRemixSlide />,
     
     // --- Zoom In ---
-    <ZoomInSlide index={0} />,
-    <ZoomInSlide index={1} />,
-    <ZoomInSlide index={2} />,
+    <ZoomInSlide index={0} difficulty={difficulty} />,
+    <ZoomInSlide index={1} difficulty={difficulty} />,
+    <ZoomInSlide index={2} difficulty={difficulty} />,
     
     // --- Forbidden Word ---
     ...FORBIDDEN_WORD_ITEMS.map((item, idx) => <ForbiddenWordSlide key={`forb-${idx}`} item={item} />),
     
     // --- Emoji Idioms ---
-    ...EMOJI_IDIOMS.map((item, idx) => <EmojiIdiomsSlide key={`eid-${idx}`} item={item} index={idx} />),
+    ...EMOJI_IDIOMS.map((item, idx) => <EmojiIdiomsSlide key={`eid-${idx}`} item={item} index={idx} difficulty={difficulty} />),
     
     // --- Odd One Out ---
     ...ODD_ONE_OUT.map((item, idx) => <OddOneOutSlide key={`odd-${idx}`} item={item} index={idx} />),
@@ -142,10 +146,10 @@ const App: React.FC = () => {
     // --- Price is Right ---
     ...PRICE_IS_RIGHT.map((item, idx) => <PriceIsRightSlide key={`price-${idx}`} item={item} index={idx} />),
     
-    <MemoryMasterSlide />, // Keep as single unit due to game logic
+    <MemoryMasterSlide difficulty={difficulty} />, // Keep as single unit due to game logic
     
     // --- Categories ---
-    ...CATEGORIES_ITEMS.map((item, idx) => <CategoriesSlide key={`cat-${idx}`} item={item} index={idx} />),
+    ...CATEGORIES_ITEMS.map((item, idx) => <CategoriesSlide key={`cat-${idx}`} item={item} index={idx} difficulty={difficulty} />),
     
     // --- Two Truths ---
     ...TRUTH_LIE_ITEMS.map((item, idx) => <TwoTruthsSlide key={`truth-${idx}`} item={item} index={idx} />),
@@ -190,6 +194,13 @@ const App: React.FC = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
+  const handleMusicToggle = () => {
+      const newState = !isMusicOn;
+      setIsMusicOn(newState);
+      playClick();
+      toggleBackgroundMusic(newState);
+  };
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -206,13 +217,24 @@ const App: React.FC = () => {
   return (
     <div className={`fixed inset-0 w-full h-full flex flex-col items-center justify-center transition-colors duration-500 overflow-hidden ${isDark ? 'bg-slate-950 dark' : 'bg-slate-100'}`}>
       
-      {/* Theme Toggle */}
-      <button 
-        onClick={() => { setIsDark(!isDark); playClick(); }}
-        className="fixed top-2 right-2 md:top-6 md:right-6 z-50 p-2 md:p-3 rounded-full bg-white dark:bg-slate-800 text-sky-500 shadow-xl border-2 border-sky-500 hover:scale-110 transition-transform"
-      >
-        {isDark ? <Sun size={20} className="md:w-6 md:h-6" /> : <Moon size={20} className="md:w-6 md:h-6" />}
-      </button>
+      {/* Controls: Theme & Music */}
+      <div className="fixed top-2 right-2 md:top-6 md:right-6 z-50 flex gap-2 md:gap-4">
+          <button 
+            onClick={handleMusicToggle}
+            className="p-2 md:p-3 rounded-full bg-white dark:bg-slate-800 text-pink-500 shadow-xl border-2 border-pink-500 hover:scale-110 transition-transform"
+            title={isMusicOn ? "Mute Music" : "Play Music"}
+          >
+            {isMusicOn ? <Music size={20} className="md:w-6 md:h-6" /> : <VolumeX size={20} className="md:w-6 md:h-6" />}
+          </button>
+          
+          <button 
+            onClick={() => { setIsDark(!isDark); playClick(); }}
+            className="p-2 md:p-3 rounded-full bg-white dark:bg-slate-800 text-sky-500 shadow-xl border-2 border-sky-500 hover:scale-110 transition-transform"
+            title={isDark ? "Light Mode" : "Dark Mode"}
+          >
+            {isDark ? <Sun size={20} className="md:w-6 md:h-6" /> : <Moon size={20} className="md:w-6 md:h-6" />}
+          </button>
+      </div>
 
       {/* Main Slide Deck - Full Screen Responsive */}
       <div className="w-full h-full p-2 md:p-4 lg:p-8 flex items-center justify-center">

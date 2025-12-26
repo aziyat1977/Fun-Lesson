@@ -1,24 +1,78 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { SlideContainer } from '../SlideContainer';
-import { Check, X, HelpCircle, Eye, MessageCircle, Link2 } from 'lucide-react';
+import { Check, X, HelpCircle, Eye, MessageCircle, Link2, Timer } from 'lucide-react';
 import { playClick, playCorrect, playIncorrect, playReveal } from '../../utils/sound';
+import { Difficulty } from '../../types';
 
 // --- GAME 15: CATEGORIES ---
-export const CategoriesSlide: React.FC<{ item: any, index: number }> = ({ item, index }) => {
+export const CategoriesSlide: React.FC<{ item: any, index: number, difficulty: Difficulty }> = ({ item, index, difficulty }) => {
+    const [timeLeft, setTimeLeft] = useState<number | null>(null);
+    const [isActive, setIsActive] = useState(false);
+    
+    const getDuration = () => {
+        switch(difficulty) {
+            case 'easy': return 10;
+            case 'medium': return 5;
+            case 'hard': return 3;
+            default: return 5;
+        }
+    }
+
+    useEffect(() => {
+        let interval: any;
+        if (isActive && timeLeft !== null && timeLeft > 0) {
+            interval = setInterval(() => {
+                setTimeLeft(prev => (prev !== null ? prev - 0.1 : 0));
+            }, 100);
+        } else if (timeLeft !== null && timeLeft <= 0) {
+            setIsActive(false);
+            setTimeLeft(0);
+        }
+        return () => clearInterval(interval);
+    }, [isActive, timeLeft]);
+
+    const startTimer = () => {
+        playClick();
+        setTimeLeft(getDuration());
+        setIsActive(true);
+    };
+
     return (
         <SlideContainer>
             <div className="flex flex-col h-full items-center justify-center">
                 <div className="flex-shrink-0 text-center mb-8">
                     <h2 className="font-righteous text-2xl md:text-4xl lg:text-5xl text-indigo-500 uppercase tracking-wider mb-2">Game 15: Rapid Categories</h2>
-                    <p className="font-outfit text-xl opacity-80">Name 3 things in 5 seconds!</p>
+                    <p className="font-outfit text-xl opacity-80">Name 3 things!</p>
                 </div>
-                <div className="flex-grow flex items-center justify-center w-full max-w-4xl">
+                <div className="flex-grow flex flex-col items-center justify-center w-full max-w-4xl gap-8">
                      <div className="bg-white dark:bg-slate-800 p-12 md:p-16 rounded-[3rem] shadow-2xl border-l-[16px] border-indigo-500 group hover:shadow-[0_20px_50px_rgba(99,102,241,0.3)] transition-all w-full text-center" onMouseEnter={playClick}>
                         <h3 className="font-righteous text-3xl md:text-6xl text-slate-800 dark:text-slate-100 mb-8 leading-tight">{item.question}</h3>
                         <div className="mt-8 opacity-0 group-hover:opacity-100 transition-opacity text-indigo-500 font-bold font-outfit text-2xl md:text-3xl">
                             Ex: {item.answer}
                         </div>
                         <div className="mt-8 text-sm md:text-lg uppercase tracking-widest opacity-30 group-hover:opacity-0">Hover for example</div>
+                    </div>
+
+                    {/* Timer UI */}
+                    <div className="w-full flex flex-col items-center">
+                        {!isActive && timeLeft !== 0 && (
+                            <button onClick={startTimer} className="bg-indigo-500 hover:bg-indigo-600 text-white font-righteous text-xl px-8 py-3 rounded-full shadow-lg flex items-center gap-2 transition-transform hover:scale-105">
+                                <Timer size={24} /> Start {getDuration()}s Timer
+                            </button>
+                        )}
+                        
+                        {(isActive || timeLeft === 0) && (
+                            <div className="w-full max-w-md h-8 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden relative border border-slate-300 dark:border-slate-600">
+                                <div 
+                                    className={`h-full transition-all ease-linear ${timeLeft === 0 ? 'bg-red-500' : 'bg-indigo-500'}`}
+                                    style={{ width: `${(Math.max(0, timeLeft || 0) / getDuration()) * 100}%`, transitionDuration: '100ms' }}
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center font-bold text-slate-800 dark:text-white drop-shadow-md">
+                                    {Math.ceil(timeLeft || 0)}s
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

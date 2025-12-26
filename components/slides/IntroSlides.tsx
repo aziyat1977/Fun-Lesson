@@ -1,8 +1,16 @@
+
 import React from 'react';
 import { SlideContainer } from '../SlideContainer';
-import { Gamepad2 } from 'lucide-react';
+import { Gamepad2, Zap, Shield, Skull } from 'lucide-react';
+import { Difficulty } from '../../types';
+import { playClick } from '../../utils/sound';
 
-export const TitleSlide: React.FC = () => {
+interface TitleSlideProps {
+  difficulty: Difficulty;
+  setDifficulty: (d: Difficulty) => void;
+}
+
+export const TitleSlide: React.FC<TitleSlideProps> = ({ difficulty, setDifficulty }) => {
   return (
     <SlideContainer className="text-center">
       <div className="flex flex-col items-center justify-center h-full space-y-6 md:space-y-8 min-h-min">
@@ -12,6 +20,32 @@ export const TitleSlide: React.FC = () => {
         <p className="font-righteous text-xl md:text-3xl lg:text-4xl text-green-500 dark:text-green-400 tracking-widest uppercase">
           English Club • Level 3 • 80 Min
         </p>
+        
+        {/* Difficulty Selector */}
+        <div className="flex flex-col items-center mt-8 space-y-4">
+            <p className="font-outfit uppercase tracking-widest text-sm opacity-60">Select Difficulty</p>
+            <div className="flex gap-4">
+                <button 
+                    onClick={() => { setDifficulty('easy'); playClick(); }}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-full font-righteous transition-all transform hover:scale-105 border-2 ${difficulty === 'easy' ? 'bg-green-500 text-white border-green-500 shadow-lg scale-105' : 'bg-transparent text-slate-500 border-slate-300 dark:border-slate-700'}`}
+                >
+                    <Shield size={20} /> EASY
+                </button>
+                <button 
+                    onClick={() => { setDifficulty('medium'); playClick(); }}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-full font-righteous transition-all transform hover:scale-105 border-2 ${difficulty === 'medium' ? 'bg-yellow-500 text-white border-yellow-500 shadow-lg scale-105' : 'bg-transparent text-slate-500 border-slate-300 dark:border-slate-700'}`}
+                >
+                    <Zap size={20} /> MEDIUM
+                </button>
+                <button 
+                    onClick={() => { setDifficulty('hard'); playClick(); }}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-full font-righteous transition-all transform hover:scale-105 border-2 ${difficulty === 'hard' ? 'bg-red-500 text-white border-red-500 shadow-lg scale-105' : 'bg-transparent text-slate-500 border-slate-300 dark:border-slate-700'}`}
+                >
+                    <Skull size={20} /> HARD
+                </button>
+            </div>
+        </div>
+
         <div className="flex items-center text-lg md:text-2xl text-slate-500 dark:text-slate-400 font-outfit font-medium mt-4 md:mt-8">
           <Gamepad2 className="w-6 h-6 md:w-8 md:h-8 mr-3" />
           <span>Movies • Music • Games • Prizes</span>

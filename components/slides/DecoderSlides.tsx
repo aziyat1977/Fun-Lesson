@@ -1,14 +1,28 @@
+
 import React from 'react';
 import { SlideContainer } from '../SlideContainer';
-import { QuizItem } from '../../types';
+import { QuizItem, Difficulty } from '../../types';
 
 interface DecoderRoundProps {
   title: string;
   items: QuizItem[];
+  difficulty: Difficulty;
 }
 
-export const DecoderRound: React.FC<DecoderRoundProps> = ({ title, items }) => {
+export const DecoderRound: React.FC<DecoderRoundProps> = ({ title, items, difficulty }) => {
   const isSingle = items.length === 1;
+
+  // Hint Logic
+  const getHintClass = () => {
+    switch (difficulty) {
+        case 'medium': return 'blur-sm hover:blur-0 transition-all duration-300 cursor-help';
+        case 'hard': return 'opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-help';
+        default: return ''; // Easy: fully visible
+    }
+  };
+
+  const hintClass = getHintClass();
+  const hintLabel = difficulty === 'hard' ? '(Hover to reveal)' : '';
 
   return (
     <SlideContainer>
@@ -25,9 +39,12 @@ export const DecoderRound: React.FC<DecoderRoundProps> = ({ title, items }) => {
                         #{items[0].id}
                     </span>
                     <span className="text-[8rem] md:text-[12rem] leading-none filter drop-shadow-xl mb-6">{items[0].emoji}</span>
-                    <span className="font-outfit text-2xl md:text-5xl text-slate-500 dark:text-slate-400 italic text-center">
-                        {items[0].hint}
-                    </span>
+                    <div className="relative">
+                        <span className={`font-outfit text-2xl md:text-5xl text-slate-500 dark:text-slate-400 italic text-center block ${hintClass}`}>
+                            {items[0].hint}
+                        </span>
+                        {difficulty === 'hard' && <span className="absolute inset-0 flex items-center justify-center text-slate-300 text-sm uppercase tracking-widest pointer-events-none">Hover for Hint</span>}
+                    </div>
                 </div>
             ) : (
                 // Grid Layout
@@ -41,7 +58,7 @@ export const DecoderRound: React.FC<DecoderRoundProps> = ({ title, items }) => {
                         #{item.id}
                     </span>
                     <span className="text-3xl md:text-4xl lg:text-6xl filter drop-shadow-md py-1 md:py-4">{item.emoji}</span>
-                    <span className="font-outfit text-xs md:text-sm lg:text-base text-slate-500 dark:text-slate-400 italic text-center line-clamp-2">
+                    <span className={`font-outfit text-xs md:text-sm lg:text-base text-slate-500 dark:text-slate-400 italic text-center line-clamp-2 ${hintClass}`}>
                         {item.hint}
                     </span>
                     </div>

@@ -16,6 +16,8 @@ const resumeContext = () => {
   }
 };
 
+// --- SFX ---
+
 export const playClick = () => {
   try {
     resumeContext();
@@ -150,3 +152,85 @@ export const playReveal = () => {
         // Ignore
     }
 }
+
+// --- Generative Background Music ---
+
+let musicEnabled = false;
+let nextNoteTime = 0;
+let schedulerTimer: number | null = null;
+let musicGain: GainNode | null = null;
+
+// C Major Pentatonic Scale (Harmonious and uplifting)
+const SCALE = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25]; 
+
+const scheduleNote = (time: number) => {
+    try {
+        const ctx = getContext();
+        
+        // Master gain for music channel
+        if (!musicGain) {
+            musicGain = ctx.createGain();
+            musicGain.gain.value = 0.03; // Keep it very subtle/background
+            musicGain.connect(ctx.destination);
+        }
+
+        const osc = ctx.createOscillator();
+        const env = ctx.createGain();
+        const panner = ctx.createStereoPanner();
+
+        // Random note from scale
+        osc.type = 'sine';
+        osc.frequency.value = SCALE[Math.floor(Math.random() * SCALE.length)];
+        
+        // Soft Envelope (Pad-like)
+        env.gain.setValueAtTime(0, time);
+        env.gain.linearRampToValueAtTime(0.5, time + 2.0); // Slow attack (2s)
+        env.gain.exponentialRampToValueAtTime(0.001, time + 6.0); // Long release (4s)
+
+        // Random Pan for spatial width
+        panner.pan.value = (Math.random() * 2) - 1; 
+
+        // Connect graph
+        osc.connect(env);
+        env.connect(panner);
+        panner.connect(musicGain);
+
+        // Start/Stop
+        osc.start(time);
+        osc.stop(time + 6.0);
+    } catch(e) {
+        // Ignore
+    }
+};
+
+const scheduler = () => {
+    if (!musicEnabled) return;
+    const ctx = getContext();
+    
+    // Lookahead: Schedule notes for the next 2 seconds
+    while (nextNoteTime < ctx.currentTime + 2.0) {
+        scheduleNote(nextNoteTime);
+        // Next note plays in 2s - 5s
+        nextNoteTime += 2.0 + Math.random() * 3.0; 
+    }
+    
+    // Check again soon
+    schedulerTimer = window.setTimeout(scheduler, 500);
+};
+
+export const toggleBackgroundMusic = (enable: boolean) => {
+    const ctx = getContext();
+    musicEnabled = enable;
+
+    if (enable) {
+        resumeContext();
+        if (ctx.state === 'suspended') ctx.resume();
+        
+        // Reset timing
+        nextNoteTime = ctx.currentTime + 0.1;
+        scheduler();
+    } else {
+        if (schedulerTimer) clearTimeout(schedulerTimer);
+        // We let ringing notes fade out naturally rather than cutting them off
+    }
+};

@@ -1,10 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
 import { SlideContainer } from '../SlideContainer';
 import { MANDELA_QUESTIONS, ROBOT_LYRICS, EMOJI_IDIOMS, ODD_ONE_OUT, SLANG_SCRAMBLE, PRICE_IS_RIGHT } from '../../constants';
 import { Gamepad2, FireExtinguisher, Smartphone, Apple, Eye, DollarSign, Clock, HelpCircle, Check, X, Car, Plane, Watch } from 'lucide-react';
 import { playClick, playCorrect, playIncorrect, playReveal } from '../../utils/sound';
+import { Difficulty } from '../../types';
 
-export const MandelaSlide: React.FC<{ item: any, index: number }> = ({ item, index }) => {
+export const MandelaSlide: React.FC<{ item: any, index: number, difficulty: Difficulty }> = ({ item, index, difficulty }) => {
   const [revealed, setRevealed] = useState(false);
 
   const handleReveal = (option: string) => {
@@ -16,6 +18,8 @@ export const MandelaSlide: React.FC<{ item: any, index: number }> = ({ item, ind
         playIncorrect();
     }
   };
+  
+  const hintClass = difficulty === 'hard' ? 'opacity-0' : difficulty === 'medium' ? 'blur-sm hover:blur-0 cursor-help' : '';
 
   return (
     <SlideContainer>
@@ -30,6 +34,8 @@ export const MandelaSlide: React.FC<{ item: any, index: number }> = ({ item, ind
         <div className="flex-grow flex flex-col justify-center items-center w-full max-w-3xl">
             <div className="bg-white dark:bg-slate-800 p-8 md:p-12 rounded-3xl shadow-2xl border-2 border-pink-500/30 flex flex-col items-center text-center w-full">
                 <h3 className="font-righteous text-3xl md:text-5xl mb-8">{item.title}</h3>
+                {difficulty !== 'hard' && <p className={`mb-8 text-xl italic opacity-70 transition-all ${hintClass}`}>Hint: {item.hint}</p>}
+                
                 <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                     <button onClick={() => handleReveal('A')} className={`w-full py-6 md:py-8 px-4 rounded-xl border-4 font-bold transition-all text-xl md:text-3xl ${revealed && item.correct === 'A' ? 'bg-green-500 text-white border-green-500 scale-105' : revealed ? 'border-slate-300 dark:border-slate-600 opacity-30' : 'border-slate-300 dark:border-slate-600 hover:bg-pink-500 hover:text-white hover:border-pink-500'}`}>
                         {item.optionA}
@@ -38,7 +44,6 @@ export const MandelaSlide: React.FC<{ item: any, index: number }> = ({ item, ind
                         {item.optionB}
                     </button>
                 </div>
-                {revealed && <p className="mt-8 text-xl md:text-2xl italic opacity-80 animate-fade-in">{item.hint}</p>}
             </div>
         </div>
       </div>
@@ -73,7 +78,7 @@ export const RobotLyricsSlide: React.FC<{ item: any, index: number }> = ({ item,
     );
 };
 
-export const ZoomInSlide: React.FC<{ index: number }> = ({ index }) => {
+export const ZoomInSlide: React.FC<{ index: number, difficulty: Difficulty }> = ({ index, difficulty }) => {
     // We handle the specific render content here based on index
     const renderContent = () => {
         if (index === 0) {
@@ -111,7 +116,7 @@ export const ZoomInSlide: React.FC<{ index: number }> = ({ index }) => {
                 <div className="flex-grow flex items-center justify-center">
                     <div className="bg-white dark:bg-slate-800 p-10 rounded-3xl border border-slate-200 dark:border-slate-700 flex flex-col items-center text-center shadow-2xl group cursor-pointer hover:border-purple-500 transition-colors" onClick={playReveal}>
                         {renderContent()}
-                        <p className="text-lg opacity-50 italic group-hover:opacity-0 transition-opacity mb-4">Hover/Tap to reveal</p>
+                        <p className={`text-lg opacity-50 italic group-hover:opacity-0 transition-opacity mb-4 ${difficulty === 'hard' ? 'hidden' : ''}`}>Hover/Tap to reveal</p>
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity text-purple-500 font-bold text-3xl md:text-5xl">{answers[index]}</div>
                     </div>
                 </div>
@@ -182,7 +187,7 @@ export const DiscussionSlide: React.FC<{ item: any }> = ({ item }) => {
 
 // --- NEW GAMES ---
 
-export const EmojiIdiomsSlide: React.FC<{ item: any, index: number }> = ({ item, index }) => {
+export const EmojiIdiomsSlide: React.FC<{ item: any, index: number, difficulty: Difficulty }> = ({ item, index, difficulty }) => {
   return (
     <SlideContainer>
         <div className="flex flex-col h-full items-center justify-center">
@@ -197,7 +202,7 @@ export const EmojiIdiomsSlide: React.FC<{ item: any, index: number }> = ({ item,
                         {/* Front */}
                         <div className="absolute backface-hidden flex flex-col items-center justify-center w-full h-full">
                             <span className="text-6xl md:text-9xl mb-8 animate-bounce">{item.emojis}</span>
-                            <span className="text-lg md:text-2xl uppercase tracking-widest opacity-50 font-bold bg-slate-100 dark:bg-slate-900 px-4 py-2 rounded-full">Hover to reveal</span>
+                            {difficulty !== 'hard' && <span className="text-lg md:text-2xl uppercase tracking-widest opacity-50 font-bold bg-slate-100 dark:bg-slate-900 px-4 py-2 rounded-full">Hover to reveal</span>}
                         </div>
                         {/* Back */}
                         <div className="absolute inset-0 bg-yellow-500 rounded-3xl rotate-y-180 backface-hidden flex items-center justify-center p-8 text-center">
@@ -364,9 +369,27 @@ export const PriceIsRightSlide: React.FC<{ item: any, index: number }> = ({ item
     )
 }
 
-export const MemoryMasterSlide: React.FC = () => {
+export const MemoryMasterSlide: React.FC<{ difficulty: Difficulty }> = ({ difficulty }) => {
     const [gameState, setGameState] = useState<'start' | 'memorize' | 'quiz' | 'reveal'>('start');
-    const [timeLeft, setTimeLeft] = useState(10);
+    
+    // Timer logic based on difficulty
+    const getInitialTime = () => {
+        switch(difficulty) {
+            case 'easy': return 15;
+            case 'medium': return 10;
+            case 'hard': return 5;
+            default: return 10;
+        }
+    }
+    
+    const [timeLeft, setTimeLeft] = useState(getInitialTime());
+    
+    // Reset timer when difficulty changes or game restarts
+    useEffect(() => {
+        if (gameState === 'start') {
+            setTimeLeft(getInitialTime());
+        }
+    }, [difficulty, gameState]);
     
     // Grid Items
     const items = [
@@ -390,7 +413,7 @@ export const MemoryMasterSlide: React.FC = () => {
 
     const startGame = () => {
         playClick();
-        setTimeLeft(10);
+        setTimeLeft(getInitialTime());
         setGameState('memorize');
     }
 
@@ -404,7 +427,7 @@ export const MemoryMasterSlide: React.FC = () => {
                 {/* STATE: START */}
                 {gameState === 'start' && (
                     <div className="text-center">
-                        <p className="font-outfit text-base md:text-xl mb-8">You have <strong>10 seconds</strong> to memorize the grid.</p>
+                        <p className="font-outfit text-base md:text-xl mb-8">You have <strong>{getInitialTime()} seconds</strong> to memorize the grid.</p>
                         <button onClick={startGame} className="bg-rose-500 text-white font-righteous text-xl md:text-2xl px-8 md:px-12 py-3 md:py-4 rounded-full shadow-xl hover:scale-105 transition-transform">
                             START TIMER
                         </button>
@@ -417,7 +440,7 @@ export const MemoryMasterSlide: React.FC = () => {
                         <div className="w-full bg-slate-200 dark:bg-slate-700 h-4 rounded-full mb-8 overflow-hidden">
                             <div 
                                 className="bg-rose-500 h-full transition-all duration-1000 ease-linear" 
-                                style={{ width: `${(timeLeft / 10) * 100}%` }}
+                                style={{ width: `${(timeLeft / getInitialTime()) * 100}%` }}
                             ></div>
                         </div>
                         <div className="grid grid-cols-3 gap-2 md:gap-8">

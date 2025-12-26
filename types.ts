@@ -1,3 +1,4 @@
+
 export interface SlideProps {
   isActive: boolean;
 }
@@ -6,6 +7,8 @@ export enum Theme {
   Dark = 'dark',
   Light = 'light',
 }
+
+export type Difficulty = 'easy' | 'medium' | 'hard';
 
 export interface QuizItem {
   id: number;
